@@ -1217,6 +1217,7 @@ class DashboardController extends Controller
         $umkm->update($validated);
 
         $user->update([
+            'name' => $validated['pemilik'],
             'phone_number' => $validated['nomor_whatsapp'],
             'provinsi' => $validated['provinsi'] ?? $user->provinsi,
             'kota' => $validated['kota'] ?? $user->kota,

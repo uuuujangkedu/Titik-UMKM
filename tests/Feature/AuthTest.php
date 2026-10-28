@@ -215,6 +215,45 @@ class AuthTest extends TestCase
         $this->get('/register/umkm')->assertSee('auth/google?role=umkm', false);
     }
 
+    public function test_google_login_links_existing_manual_otp_account(): void
+    {
+        $manual = User::create([
+            'name' => 'Nurul Manual',
+            'email' => 'nurul@gmail.com',
+            'password' => 'Rahasia123!',
+            'role' => 'umkm',
+            'status' => 'aktif',
+            'phone_number' => '081200000000',
+            'email_verified_at' => now(),
+        ]);
+
+        $abstractUser = Mockery::mock(SocialiteUser::class);
+        $abstractUser->shouldReceive('getId')->andReturn('google-nurul-id');
+        $abstractUser->shouldReceive('getName')->andReturn('NURUL DWI ALFIYANTI');
+        $abstractUser->shouldReceive('getEmail')->andReturn('NURUL@Gmail.com');
+        $abstractUser->shouldReceive('getAvatar')->andReturn('https://lh3.googleusercontent.com/nurul.jpg');
+
+        $provider = Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
+        $provider->shouldReceive('user')->andReturn($abstractUser);
+        Socialite::shouldReceive('driver')->with('google')->andReturn($provider);
+
+        $this->get('/auth/google/callback')->assertRedirect('/dashboard');
+
+        $this->assertAuthenticatedAs($manual->fresh());
+        $this->assertSame(1, User::where('email', 'nurul@gmail.com')->count());
+
+        $fresh = $manual->fresh();
+        $this->assertSame('umkm', $fresh->role);
+        $this->assertSame('Nurul Manual', $fresh->name);
+        $this->assertTrue(Hash::check('Rahasia123!', $fresh->password));
+
+        $this->assertDatabaseHas('third_party_authentications', [
+            'user_id' => $manual->id,
+            'provider_name' => 'google',
+            'provider_user_id' => 'google-nurul-id',
+        ]);
+    }
+
     public function test_google_registration_uses_selected_umkm_role(): void
     {
         $abstractUser = Mockery::mock(SocialiteUser::class);

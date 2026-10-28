@@ -94,5 +94,7 @@ class UmkmProfilTabTest extends TestCase
             'modal_dibutuhkan' => 50000000,
             'id_ruko_diminati' => $ruko->id_ruko,
         ]);
+
+        $this->assertSame('Ahmad Santoso', $user->fresh()->name);
     }
 }

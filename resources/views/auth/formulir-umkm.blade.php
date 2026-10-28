@@ -138,7 +138,7 @@
                 <input type="text" 
                        id="pemilik" 
                        name="pemilik" 
-                       value="{{ old('pemilik', $umkm->pemilik ?? $user->name) }}" 
+                       value="{{ old('pemilik', $user->name) }}" 
                        required
                        placeholder="Contoh: Raka Wibian" 
                        class="w-full h-11 px-3.5 bg-white border border-[#e2e1d8] focus:border-[#0b5a4a] focus:ring-1 focus:ring-[#0b5a4a] rounded-[6px] text-[14px] text-[#161d1a] transition outline-none">

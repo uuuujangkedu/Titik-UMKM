@@ -101,10 +101,10 @@
                 </span>
             </div>
         </div>
-        <!-- Grid 4 Kolom: Provinsi, Kota, Kecamatan, Kelurahan -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        <!-- Grid Wilayah: Provinsi, Kota, Kecamatan, Kelurahan -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
             <!-- Provinsi -->
-            <div>
+            <div class="min-w-0">
                 <label for="{{ $idPrefix }}_provinsi" class="block text-[13px] font-semibold text-[#161d1a] mb-1.5">
                     Provinsi @if($required)<span class="text-red-500">*</span>@endif
                 </label>
@@ -116,20 +116,20 @@
             </div>
 
             <!-- Kota / Kabupaten -->
-            <div>
-                <label for="{{ $idPrefix }}_kota" class="block text-[13px] font-semibold text-[#161d1a] mb-1.5">
+            <div class="min-w-0">
+                <label for="{{ $idPrefix }}_kota" class="block text-[13px] font-semibold text-[#161d1a] mb-1.5 whitespace-nowrap">
                     Kota / Kabupaten @if($required)<span class="text-red-500">*</span>@endif
                 </label>
                 <select id="{{ $idPrefix }}_kota" 
                         name="kota"
                         class="w-full h-11 px-3.5 bg-white border border-[#e2e1d8] focus:border-[#0b5a4a] focus:ring-1 focus:ring-[#0b5a4a] rounded-[6px] text-[14px] text-[#161d1a] outline-none transition cursor-pointer">
-                    <option value="">-- Pilih Kota / Kab --</option>
+                    <option value="">-- Pilih Kota / Kabupaten --</option>
                 </select>
             </div>
 
             <!-- Kecamatan -->
-            <div>
-                <label for="{{ $idPrefix }}_kecamatan" class="block text-[13px] font-semibold text-[#161d1a] mb-1.5">
+            <div class="min-w-0">
+                <label for="{{ $idPrefix }}_kecamatan" class="block text-[13px] font-semibold text-[#161d1a] mb-1.5 whitespace-nowrap">
                     Kecamatan
                 </label>
                 <select id="{{ $idPrefix }}_kecamatan" 
@@ -140,8 +140,8 @@
             </div>
 
             <!-- Kelurahan / Desa -->
-            <div>
-                <label for="{{ $idPrefix }}_kelurahan" class="block text-[13px] font-semibold text-[#161d1a] mb-1.5">
+            <div class="min-w-0">
+                <label for="{{ $idPrefix }}_kelurahan" class="block text-[13px] font-semibold text-[#161d1a] mb-1.5 whitespace-nowrap">
                     Kelurahan / Desa
                 </label>
                 <select id="{{ $idPrefix }}_kelurahan" 
@@ -164,7 +164,7 @@
         <label class="block text-[13px] font-semibold text-[#161d1a] mb-1.5">
             RT / RW (Rukun Tetangga & Rukun Warga)
         </label>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-4">
+        <div class="grid grid-cols-2 gap-3.5 sm:gap-4 sm:max-w-md">
             <div>
                 <div class="flex items-center h-11 rounded-[6px] border border-[#e2e1d8] focus-within:border-[#0b5a4a] focus-within:ring-1 focus-within:ring-[#0b5a4a] bg-white overflow-hidden transition">
                     <span class="h-full px-3.5 bg-[#f7f6f1] text-[13px] text-[#4b5551] font-semibold border-r border-[#e2e1d8] flex items-center justify-center select-none">RT</span>
@@ -953,7 +953,7 @@
         syncCombinedProvinsiKota();
 
         // Reset Kota, Kecamatan, Kelurahan
-        kotaSelect.innerHTML = '<option value="">-- Pilih Kota / Kab --</option>';
+        kotaSelect.innerHTML = '<option value="">-- Pilih Kota / Kabupaten --</option>';
         kecSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
         kelSelect.innerHTML = '<option value="">-- Pilih Kelurahan / Desa --</option>';
 

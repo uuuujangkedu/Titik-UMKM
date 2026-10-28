@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules\Password;
@@ -487,25 +488,49 @@ class AuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (Throwable $e) {
-            return redirect()->route('login')->with('error', 'Autentikasi Google gagal atau dibatalkan: '.$e->getMessage());
+            Log::warning('Google OAuth callback gagal', [
+                'error' => $e->getMessage(),
+                'request' => request()->fullUrl(),
+            ]);
+
+            return redirect()->route('login')->with('error', 'Autentikasi Google gagal atau dibatalkan. Silakan coba lagi, atau masuk dengan email & kata sandi.');
         }
 
-        // Cari atau buat pengguna
-        $user = User::where('email', $googleUser->getEmail())->first();
+        $googleId = (string) $googleUser->getId();
+        $email = strtolower(trim((string) $googleUser->getEmail()));
+
+        if ($email === '') {
+            return redirect()->route('login')->with('error', 'Akun Google Anda tidak membagikan alamat email, sehingga tidak bisa dipakai untuk masuk.');
+        }
+
+        // Utamakan pencocokan lewat ID Google yang sudah pernah terhubung,
+        // lalu jatuh ke email agar akun yang didaftarkan manual (OTP) ikut terpakai.
+        $user = ThirdPartyAuthentication::where('provider_name', 'google')
+            ->where('provider_user_id', $googleId)
+            ->first()?->user;
+
+        if (! $user) {
+            $user = User::where('email', $email)->first();
+        }
+
+        if ($user && $user->status === 'ditangguhkan') {
+            return redirect()->route('login')->with('error', 'Akun Anda sedang ditangguhkan. Hubungi admin DAYA UMKM.');
+        }
 
         if (! $user) {
             // Pengguna baru mendaftar via Google -> otomatis terverifikasi & aktif sesuai ERD
             $role = request()->session()->pull('google_registration_role', 'investor');
             $user = User::create([
                 'name' => $googleUser->getName() ?? 'Pengguna Google',
-                'email' => $googleUser->getEmail(),
+                'email' => $email,
                 'role' => $role,
                 'email_verified_at' => Carbon::now(),
                 'status' => 'aktif',
                 'avatar_url' => $googleUser->getAvatar(),
             ]);
         } else {
-            // Update email_verified_at jika belum
+            // Akun lama (termasuk hasil daftar manual via OTP): verifikasi email & aktifkan,
+            // tanpa menyentuh kata sandi maupun peran yang sudah ada.
             if (! $user->email_verified_at) {
                 $user->email_verified_at = Carbon::now();
             }
@@ -522,7 +547,7 @@ class AuthController extends Controller
         ThirdPartyAuthentication::updateOrCreate(
             [
                 'provider_name' => 'google',
-                'provider_user_id' => $googleUser->getId(),
+                'provider_user_id' => $googleId,
             ],
             [
                 'user_id' => $user->id,

@@ -249,16 +249,14 @@
                                class="hidden peer" 
                                onchange="updateSelectedUmkmCount()">
 
+                        <!-- Indikator Checkmark Terpilih di Pojok Kanan Atas -->
+                        <span class="pointer-events-none absolute top-2.5 right-2.5 z-10 w-6 h-6 rounded-full bg-white/90 border border-gray-300 text-gray-300 peer-checked:bg-[#0b5a4a] peer-checked:border-[#0b5a4a] peer-checked:text-white flex items-center justify-center transition shadow-2xs">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </span>
+
                         <div class="rounded-[10px] border border-[#e2e1d8] peer-checked:border-[#0b5a4a] peer-checked:ring-2 peer-checked:ring-[#0b5a4a] peer-checked:bg-[#f2f8ed]/40 bg-white p-3 transition flex flex-col h-full shadow-2xs hover:border-[#0b5a4a] hover:shadow-sm relative">
-                            
-                            <!-- Indikator Checkmark Terpilih di Pojok Kanan Atas -->
-                            <div class="absolute top-2.5 right-2.5 z-10">
-                                <span class="w-6 h-6 rounded-full bg-white/90 border border-gray-300 peer-checked:bg-[#0b5a4a] peer-checked:border-[#0b5a4a] flex items-center justify-center transition shadow-2xs">
-                                    <svg class="w-3.5 h-3.5 text-gray-300 peer-checked:text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </span>
-                            </div>
 
                             <!-- Foto Asli Produk / Usaha UMKM -->
                             <div class="w-full aspect-[4/3] rounded-[8px] overflow-hidden mb-2.5 bg-[#d8ebe5] relative border border-[#e2e1d8]">

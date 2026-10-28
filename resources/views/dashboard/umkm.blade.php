@@ -3119,7 +3119,7 @@
                                 <input type="text" 
                                        id="tab_pemilik" 
                                        name="pemilik" 
-                                       value="{{ old('pemilik', $umkm->pemilik ?? $user->name) }}" 
+                                       value="{{ old('pemilik', $user->name) }}" 
                                        required
                                        placeholder="Contoh: Raka Wibian" 
                                        class="w-full h-11 px-3.5 bg-white border border-[#E8E6DF] focus:border-[#0F433C] focus:ring-1 focus:ring-[#0F433C] rounded-xl text-xs sm:text-sm text-[#1A202C] transition outline-none shadow-xs font-medium">
