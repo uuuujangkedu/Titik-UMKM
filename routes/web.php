@@ -153,6 +153,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/influencer/order/{id}/terima', [InfluencerController::class, 'terimaOrder'])->name('dashboard.influencer.order.terima');
     Route::post('/dashboard/influencer/order/{id}/tolak', [InfluencerController::class, 'tolakOrder'])->name('dashboard.influencer.order.tolak');
     Route::post('/dashboard/influencer/order/{id}/bukti', [InfluencerController::class, 'submitBuktiKonten'])->name('dashboard.influencer.order.bukti');
+    Route::post('/dashboard/influencer/tarik-saldo', [InfluencerController::class, 'tarikSaldo'])->name('dashboard.influencer.tarik-saldo');
 
     // Aksi Sewa Influencer UMKM (Mandiri & Pengajuan Sponsor)
     Route::post('/dashboard/umkm/influencer/order-mandiri', [InfluencerController::class, 'orderMandiriUmkm'])->name('dashboard.umkm.influencer.order');
@@ -165,6 +166,7 @@ Route::middleware('auth')->group(function () {
 
     // Verifikasi & Rating Selesai (oleh Pemesan / Investor)
     Route::post('/dashboard/influencer/order/{id}/selesai', [InfluencerController::class, 'selesaikanDanBeriUlasan'])->name('dashboard.influencer.order.selesai');
+    Route::post('/dashboard/influencer/order/{id}/bayar-escrow', [InfluencerController::class, 'bayarEscrow'])->name('dashboard.influencer.order.bayar-escrow');
 
     // ==========================================
     // E-SIGN & KONTRAK DIGITAL HUKUM ROUTES

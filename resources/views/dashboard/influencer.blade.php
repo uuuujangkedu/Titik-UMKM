@@ -57,9 +57,9 @@
                         @if($profile->username_tiktok)
                             <span class="flex items-center gap-1 font-medium"><span class="font-bold text-cyan-300">TikTok:</span> {{ $profile->username_tiktok }}</span>
                         @endif
-                        <span class="flex items-center gap-1 text-amber-300 font-bold">
-                            ★ {{ number_format($stats['rating'], 1) }} ({{ $stats['total_ulasan'] }} ulasan mitra)
-                        </span>
+                        <a href="{{ route('dashboard', ['tab' => 'riwayat']) }}" class="flex items-center gap-1 text-amber-300 font-bold hover:underline cursor-pointer" title="Lihat semua riwayat ulasan saya">
+                            ★ {{ number_format($stats['rating'], 1) }} ({{ $stats['total_ulasan'] }} ulasan mitra) &rarr;
+                        </a>
                     </div>
                 </div>
             </div>
@@ -80,15 +80,24 @@
     <!-- 4 KARTU STATISTIK KPI KREATOR (Sesuai Class card-soft Dashboard TIKUM) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <!-- Saldo Siap Tarik -->
-        <div class="card-soft p-6">
-            <div class="w-12 h-12 rounded-2xl bg-[#EFF5F1] text-[#20675D] flex items-center justify-center mb-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="card-soft p-6 flex flex-col justify-between">
+            <div>
+                <div class="w-12 h-12 rounded-2xl bg-[#EFF5F1] text-[#20675D] flex items-center justify-center mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <p class="text-xs font-bold text-gray-500">Saldo Penghasilan</p>
+                <h3 class="text-2xl font-black text-[#1A202C] mt-1 tracking-tight">
+                    Rp {{ number_format($stats['total_pendapatan'], 0, ',', '.') }}
+                </h3>
+                <p class="text-[11px] text-[#20675D] font-semibold mt-1">● Masuk otomatis saat konten disetujui</p>
             </div>
-            <p class="text-xs font-bold text-gray-500">Saldo Penghasilan</p>
-            <h3 class="text-2xl font-black text-[#1A202C] mt-1 tracking-tight">
-                Rp {{ number_format($stats['total_pendapatan'], 0, ',', '.') }}
-            </h3>
-            <p class="text-[11px] text-[#20675D] font-semibold mt-1">● Masuk otomatis saat konten disetujui</p>
+            @if($profile->saldo > 0)
+                <button type="button" onclick="document.getElementById('modal-tarik-saldo').classList.remove('hidden')"
+                        class="mt-3.5 w-full py-2 bg-[#0F433C] hover:bg-[#19584F] text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <span>Tarik Saldo ke Rekening</span>
+                </button>
+            @endif
         </div>
 
         <!-- Pesanan Masuk / Aktif -->
@@ -116,16 +125,19 @@
         </div>
 
         <!-- Rating & Reputasi -->
-        <div class="card-soft p-6">
-            <div class="w-12 h-12 rounded-2xl bg-[#F4EFFB] text-purple-800 flex items-center justify-center mb-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+        <a href="{{ route('dashboard', ['tab' => 'riwayat']) }}" class="card-soft p-6 block hover:shadow-md transition cursor-pointer group" title="Lihat semua riwayat ulasan saya">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-12 h-12 rounded-2xl bg-[#F4EFFB] text-purple-800 flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                </div>
+                <span class="text-xs font-bold text-purple-700 group-hover:underline">Lihat Ulasan &rarr;</span>
             </div>
             <p class="text-xs font-bold text-gray-500">Rating Performa</p>
             <h3 class="text-2xl font-black text-[#1A202C] mt-1 tracking-tight">
                 ★ {{ number_format($stats['rating'], 1) }} <span class="text-sm font-normal text-gray-400">/ 5.0</span>
             </h3>
             <p class="text-[11px] text-purple-700 font-semibold mt-1">● Berdasarkan {{ $stats['total_ulasan'] }} ulasan mitra</p>
-        </div>
+        </a>
     </div>
 
     {{-- ========================================================================= --}}
@@ -227,7 +239,28 @@
                                             ✕ Tolak
                                         </button>
                                     </div>
+                                @elseif($order->status === 'menunggu_pembayaran_escrow')
+                                    <div class="p-3 bg-amber-50 text-amber-900 rounded-xl text-xs border border-amber-200 space-y-1">
+                                        <div class="flex items-center gap-1.5 font-bold text-amber-800">
+                                            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                                            <span>Menunggu Pembayaran Escrow</span>
+                                        </div>
+                                        <p class="text-[11px] text-amber-800/90 leading-tight">
+                                            Anda telah menyetujui pesanan. Menunggu pemesan mentransfer dana Rp {{ number_format($order->biaya, 0, ',', '.') }} ke Rekber Titik-UMKM sebelum Anda mulai memproduksi konten.
+                                        </p>
+                                    </div>
                                 @elseif($order->status === 'sedang_dikerjakan')
+                                    @if($order->status_pembayaran === 'lunas_escrow')
+                                        <div class="mb-2 p-2 bg-emerald-50 rounded-xl border border-emerald-200 text-[11px] text-emerald-900 flex items-center justify-between">
+                                            <span class="font-bold flex items-center gap-1.5">
+                                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                                <span>Dana Escrow Terjamin (Rp {{ number_format($order->biaya, 0, ',', '.') }})</span>
+                                            </span>
+                                            @if($order->bukti_transfer_pemesan)
+                                                <a href="{{ $order->bukti_transfer_pemesan_url }}" target="_blank" rel="noopener noreferrer" class="text-[#0F433C] font-bold underline">Lihat Struk</a>
+                                            @endif
+                                        </div>
+                                    @endif
                                     <button type="button" onclick="document.getElementById('modal-bukti-{{ $order->id }}').classList.remove('hidden')"
                                             class="w-full py-2.5 bg-[#0F433C] hover:bg-[#19584F] text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center justify-center gap-1.5">
                                         <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
@@ -238,63 +271,6 @@
                                         ⏳ Bukti konten telah dikirim. Menunggu verifikasi penyelesaian dari pemesan.
                                     </div>
                                 @endif
-                            </div>
-                        </div>
-
-                        <!-- MODAL TOLAK PESANAN -->
-                        <div id="modal-tolak-{{ $order->id }}" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-[#E8E6DF]">
-                                <h3 class="text-base font-bold text-rose-700 mb-1">Tolak Tawaran Promosi</h3>
-                                <p class="text-xs text-gray-500 mb-4">Berikan alasan penolakan untuk pesanan #{{ $order->kode_order }}.</p>
-                                <form action="{{ route('dashboard.influencer.order.tolak', $order->id) }}" method="POST">
-                                    @csrf
-                                    <textarea name="alasan_penolakan" rows="3" required placeholder="Contoh: Jadwal endorse minggu ini sedang penuh atau produk di luar niche saya..."
-                                              class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-[6px] text-[13px] text-[#161d1a] p-3 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"></textarea>
-                                    <div class="flex items-center justify-end gap-2 mt-4">
-                                        <button type="button" onclick="document.getElementById('modal-tolak-{{ $order->id }}').classList.add('hidden')" 
-                                                class="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl">Batal</button>
-                                        <button type="submit" class="px-5 py-2 text-xs font-bold bg-rose-600 text-white rounded-xl hover:bg-rose-700 shadow-sm">Konfirmasi Tolak</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <!-- MODAL SUBMIT BUKTI KONTEN -->
-                        <div id="modal-bukti-{{ $order->id }}" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                            <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-xl border border-[#E8E6DF]">
-                                <div class="flex items-center justify-between pb-3 border-b border-[#E8E6DF] mb-4">
-                                    <div>
-                                        <h3 class="text-base font-bold text-[#1A202C]">Unggah Bukti Publikasi</h3>
-                                        <p class="text-xs text-gray-500">Order #{{ $order->kode_order }} &bull; {{ $order->umkm->nama_usaha ?? '' }}</p>
-                                    </div>
-                                    <button type="button" onclick="document.getElementById('modal-bukti-{{ $order->id }}').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">✕</button>
-                                </div>
-                                <form action="{{ route('dashboard.influencer.order.bukti', $order->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                                    @csrf
-                                    <div>
-                                        <label class="block text-[13px] font-semibold text-[#161d1a] mb-1">Tautan / Link Video Konten (TikTok / Reels / YouTube) *</label>
-                                        <input type="url" name="link_bukti_konten" required placeholder="https://www.tiktok.com/@username/video/..." 
-                                               value="{{ old('link_bukti_konten', $order->link_bukti_konten) }}"
-                                               class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-[6px] text-[13px] text-[#161d1a] px-3.5 py-2.5 focus:border-[#0b5a4a] focus:ring-1 focus:ring-[#0b5a4a] focus:bg-white">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-[13px] font-semibold text-[#161d1a] mb-1">Screenshot Statistik / Insight Views (Opsional)</label>
-                                        <input type="file" name="screenshot_insight" accept="image/*"
-                                               class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-[6px] text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-[4px] file:border-0 file:text-[11px] file:font-semibold file:bg-[#d8ebe5] file:text-[#0b5a4a]">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-[13px] font-semibold text-[#161d1a] mb-1">Catatan Tambahan untuk Pemesan</label>
-                                        <textarea name="catatan_influencer" rows="2" placeholder="Catatan pesan untuk UMKM atau Investor pemesan..." 
-                                                  class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-[6px] text-[13px] text-[#161d1a] p-3 focus:border-[#0b5a4a] focus:ring-1 focus:ring-[#0b5a4a] focus:bg-white">{{ old('catatan_influencer', $order->catatan_influencer) }}</textarea>
-                                    </div>
-
-                                    <div class="flex items-center justify-end gap-2 pt-3 border-t border-[#E8E6DF]">
-                                        <button type="button" onclick="document.getElementById('modal-bukti-{{ $order->id }}').classList.add('hidden')" class="px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl">Batal</button>
-                                        <button type="submit" class="px-5 py-2.5 text-xs font-bold bg-[#0F433C] text-white rounded-xl hover:bg-[#19584F] shadow-sm">Kirim Bukti Konten</button>
-                                    </div>
-                                </form>
                             </div>
                         </div>
                     @endforeach
@@ -367,18 +343,40 @@
                             <!-- Actions -->
                             <div class="flex items-center justify-end gap-3 pt-3 border-t border-[#E8E6DF]">
                                 @if($order->status === 'menunggu_respon_influencer')
+                                    <button type="button" onclick="document.getElementById('modal-tolak-{{ $order->id }}').classList.remove('hidden')" 
+                                            class="px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition">
+                                        ✕ Tolak
+                                    </button>
                                     <form action="{{ route('dashboard.influencer.order.terima', $order->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="px-5 py-2.5 bg-[#0F433C] hover:bg-[#19584F] text-white text-xs font-bold rounded-xl transition shadow-sm">
                                             ✓ Terima & Kerjakan Pesanan
                                         </button>
                                     </form>
+                                @elseif($order->status === 'menunggu_pembayaran_escrow')
+                                    <div class="p-3 bg-amber-50 text-amber-900 rounded-xl text-xs border border-amber-200 flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping shrink-0"></span>
+                                        <span>Pesanan disetujui. Menunggu pemesan mentransfer deposit ke Rekber Titik-UMKM sebelum Anda mulai memproduksi konten.</span>
+                                    </div>
                                 @elseif($order->status === 'sedang_dikerjakan')
-                                    <button type="button" onclick="document.getElementById('modal-bukti-{{ $order->id }}').classList.remove('hidden')"
-                                            class="px-5 py-2.5 bg-[#0F433C] hover:bg-[#19584F] text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center gap-1.5">
-                                        <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                                        <span>Unggah Link Bukti Konten</span>
-                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        @if($order->bukti_transfer_pemesan)
+                                            <a href="{{ $order->bukti_transfer_pemesan_url }}" target="_blank" rel="noopener noreferrer"
+                                               class="px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold rounded-xl transition flex items-center gap-1">
+                                                <span>✓ Dana Escrow Terjamin</span>
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                            </a>
+                                        @endif
+                                        <button type="button" onclick="document.getElementById('modal-bukti-{{ $order->id }}').classList.remove('hidden')"
+                                                class="px-5 py-2.5 bg-[#0F433C] hover:bg-[#19584F] text-white text-xs font-bold rounded-xl transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+                                            <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                            <span>Unggah Link Bukti Konten</span>
+                                        </button>
+                                    </div>
+                                @elseif($order->status === 'menunggu_verifikasi')
+                                    <div class="p-2.5 bg-blue-50 text-blue-800 rounded-xl text-center text-xs font-semibold border border-blue-200 flex items-center gap-1.5">
+                                        <span>⏳ Bukti konten telah dikirim. Menunggu konfirmasi verifikasi dari pemesan.</span>
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -442,7 +440,15 @@
                             </div>
 
                             <div class="mt-4 pt-3 border-t border-[#E8E6DF] flex items-center justify-between text-xs">
-                                <span class="text-gray-400">{{ $item->updated_at->format('d M Y') }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-400">{{ $item->updated_at->format('d M Y') }}</span>
+                                    @if($item->bukti_transfer_pemesan)
+                                        <a href="{{ $item->bukti_transfer_pemesan_url }}" target="_blank" rel="noopener noreferrer" 
+                                           class="text-[11px] font-bold text-[#0F433C] hover:underline bg-[#EFF5F1] px-2 py-0.5 rounded-lg border border-emerald-200">
+                                            Bukti Escrow
+                                        </a>
+                                    @endif
+                                </div>
                                 <span class="font-black text-sm text-[#0F433C]">+ Rp {{ number_format($item->biaya, 0, ',', '.') }}</span>
                             </div>
                         </div>
@@ -589,4 +595,136 @@
         </div>
     @endif
 </div>
+
+{{-- MODALS GLOBAL UNTUK PESANAN AKTIF (Bisa dibuka dari Tab Beranda maupun Tab Pesanan) --}}
+@if(isset($activeOrders) && $activeOrders->isNotEmpty())
+    @foreach($activeOrders as $order)
+        <!-- MODAL TOLAK PESANAN -->
+        <div id="modal-tolak-{{ $order->id }}" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-[#E8E6DF]">
+                <h3 class="text-base font-bold text-rose-700 mb-1">Tolak Tawaran Promosi</h3>
+                <p class="text-xs text-gray-500 mb-4">Berikan alasan penolakan untuk pesanan #{{ $order->kode_order }}.</p>
+                <form action="{{ route('dashboard.influencer.order.tolak', $order->id) }}" method="POST">
+                    @csrf
+                    <textarea name="alasan_penolakan" rows="3" required placeholder="Contoh: Jadwal endorse minggu ini sedang penuh atau produk di luar niche saya..."
+                              class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-[6px] text-[13px] text-[#161d1a] p-3 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"></textarea>
+                    <div class="flex items-center justify-end gap-2 mt-4">
+                        <button type="button" onclick="document.getElementById('modal-tolak-{{ $order->id }}').classList.add('hidden')" 
+                                class="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl">Batal</button>
+                        <button type="submit" class="px-5 py-2 text-xs font-bold bg-rose-600 text-white rounded-xl hover:bg-rose-700 shadow-sm">Konfirmasi Tolak</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL SUBMIT BUKTI KONTEN -->
+        <div id="modal-bukti-{{ $order->id }}" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-xl border border-[#E8E6DF]">
+                <div class="flex items-center justify-between pb-3 border-b border-[#E8E6DF] mb-4">
+                    <div>
+                        <h3 class="text-base font-bold text-[#1A202C]">Unggah Bukti Publikasi</h3>
+                        <p class="text-xs text-gray-500">Order #{{ $order->kode_order }} &bull; {{ $order->umkm->nama_usaha ?? '' }}</p>
+                    </div>
+                    <button type="button" onclick="document.getElementById('modal-bukti-{{ $order->id }}').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">✕</button>
+                </div>
+                <form action="{{ route('dashboard.influencer.order.bukti', $order->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-[13px] font-semibold text-[#161d1a] mb-1">Tautan / Link Video Konten (TikTok / Reels / YouTube) *</label>
+                        <input type="url" name="link_bukti_konten" required placeholder="https://www.tiktok.com/@username/video/..." 
+                               value="{{ old('link_bukti_konten', $order->link_bukti_konten) }}"
+                               class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-[6px] text-[13px] text-[#161d1a] px-3.5 py-2.5 focus:border-[#0b5a4a] focus:ring-1 focus:ring-[#0b5a4a] focus:bg-white">
+                        <span class="text-[11px] text-gray-400 mt-1 block">Pastikan menyertakan https:// di awal tautan link.</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-[13px] font-semibold text-[#161d1a] mb-1">Screenshot Statistik / Insight Views (Opsional)</label>
+                        <input type="file" name="screenshot_insight" accept="image/*"
+                               class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-[6px] text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-[4px] file:border-0 file:text-[11px] file:font-semibold file:bg-[#d8ebe5] file:text-[#0b5a4a]">
+                    </div>
+
+                    <div>
+                        <label class="block text-[13px] font-semibold text-[#161d1a] mb-1">Catatan Tambahan untuk Pemesan</label>
+                        <textarea name="catatan_influencer" rows="2" placeholder="Catatan pesan untuk UMKM atau Investor pemesan..." 
+                                  class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-[6px] text-[13px] text-[#161d1a] p-3 focus:border-[#0b5a4a] focus:ring-1 focus:ring-[#0b5a4a] focus:bg-white">{{ old('catatan_influencer', $order->catatan_influencer) }}</textarea>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-3 border-t border-[#E8E6DF]">
+                        <button type="button" onclick="document.getElementById('modal-bukti-{{ $order->id }}').classList.add('hidden')" class="px-4 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl">Batal</button>
+                        <button type="submit" class="px-5 py-2.5 text-xs font-bold bg-[#0F433C] text-white rounded-xl hover:bg-[#19584F] shadow-sm">Kirim Bukti Konten</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endforeach
+@endif
+
+<!-- MODAL TARIK SALDO PENGHASILAN KE REKENING -->
+@if(isset($profile) && $profile)
+<div id="modal-tarik-saldo" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-[#E8E6DF]">
+        <div class="flex items-center justify-between pb-3 border-b border-[#E8E6DF] mb-4">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-[#0F433C] flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-[#1A202C]">Tarik Saldo Penghasilan</h3>
+                    <p class="text-xs text-gray-500">Cairkan honor ke rekening bank Anda</p>
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('modal-tarik-saldo').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+        </div>
+
+        <form action="{{ route('dashboard.influencer.tarik-saldo') }}" method="POST" class="space-y-4">
+            @csrf
+            <!-- Informasi Saldo Aktif -->
+            <div class="p-3.5 bg-[#EFF5F1] rounded-2xl border border-emerald-100 flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold text-gray-500 block">Saldo Siap Dicairkan</span>
+                    <span class="text-lg font-black text-[#0F433C]">Rp {{ number_format($profile->saldo, 0, ',', '.') }}</span>
+                </div>
+                <span class="px-2.5 py-1 text-[10px] font-bold bg-white text-emerald-800 rounded-lg shadow-xs border border-emerald-200">Tersedia</span>
+            </div>
+
+            <!-- Rekening Tujuan -->
+            <div class="p-3.5 bg-gray-50 rounded-2xl border border-gray-200 space-y-1">
+                <span class="text-[11px] font-bold text-gray-500 block uppercase tracking-wider">Rekening Tujuan Pencairan</span>
+                @if(!empty($profile->nomor_rekening))
+                    <div class="text-xs font-black text-gray-900 flex items-center gap-2">
+                        <span class="px-2 py-0.5 bg-gray-200 rounded text-[11px]">{{ $profile->bank_name ?? 'Bank' }}</span>
+                        <span>{{ $profile->nomor_rekening }}</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500">Atas Nama: <strong class="text-gray-700">{{ $profile->nama_rekening ?? '-' }}</strong></p>
+                @else
+                    <p class="text-xs text-rose-600 font-semibold">Anda belum mengatur nomor rekening bank.</p>
+                    <a href="#tab-profil" onclick="showTab('profil')" class="text-[11px] text-[#0F433C] font-bold underline">Atur Rekening di Tab Profil &rarr;</a>
+                @endif
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Nominal Penarikan (Rp) *</label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">Rp</span>
+                    <input type="number" name="nominal" required min="50000" max="{{ (int)$profile->saldo }}" step="1000"
+                           value="{{ old('nominal', (int)$profile->saldo) }}"
+                           placeholder="Contoh: 1000000"
+                           class="w-full pl-10 pr-3.5 py-2.5 bg-white border border-[#e2e1d8] rounded-xl text-xs font-bold text-gray-900 focus:border-[#0b5a4a] focus:ring-1 focus:ring-[#0b5a4a]">
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-gray-400 mt-1">
+                    <span>Minimal: Rp 50.000</span>
+                    <button type="button" onclick="document.querySelector('input[name=nominal]').value='{{ (int)$profile->saldo }}'" class="text-[#0F433C] font-bold hover:underline">Tarik Semua</button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-3 border-t border-[#E8E6DF]">
+                <button type="button" onclick="document.getElementById('modal-tarik-saldo').classList.add('hidden')" class="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 text-xs font-bold bg-[#0F433C] text-white rounded-xl hover:bg-[#19584F] shadow-sm flex items-center gap-1.5" {{ empty($profile->nomor_rekening) || $profile->saldo < 50000 ? 'disabled' : '' }}>
+                    <span>Konfirmasi Tarik Dana</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 @endsection

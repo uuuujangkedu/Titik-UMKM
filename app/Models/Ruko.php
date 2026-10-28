@@ -78,6 +78,26 @@ class Ruko extends Model
         return 'bg-emerald-50 text-emerald-800 border-emerald-200';
     }
 
+    /**
+     * Skor Rating Kelayakan Lokasi & Potensi Komersial (skala 1 - 5)
+     */
+    public function getRatingLokasiAttribute(): float
+    {
+        $ratings = [
+            1 => 4.9,
+            2 => 4.8,
+            3 => 4.9,
+            4 => 4.7,
+            5 => 4.6,
+            6 => 4.8,
+            7 => 4.7,
+            8 => 4.8,
+            9 => 4.7,
+        ];
+
+        return $ratings[$this->id_ruko] ?? 4.8;
+    }
+
     public function penyedia(): BelongsTo
     {
         return $this->belongsTo(PenyediaRuko::class, 'id_penyedia', 'id_penyedia');
@@ -97,12 +117,15 @@ class Ruko extends Model
             if (str_starts_with($this->foto_ruko, 'http://') || str_starts_with($this->foto_ruko, 'https://')) {
                 return $this->foto_ruko;
             }
-            if (file_exists(public_path(ltrim($this->foto_ruko, '/\\')))) {
-                return asset(ltrim($this->foto_ruko, '/\\'));
+            $clean = ltrim($this->foto_ruko, '/\\');
+            if (file_exists(public_path($clean))) {
+                return asset($clean);
             }
-            if (file_exists(storage_path('app/public/'.ltrim($this->foto_ruko, '/\\')))) {
-                return asset('storage/'.ltrim($this->foto_ruko, '/\\'));
+            if (file_exists(storage_path('app/public/'.$clean))) {
+                return asset('storage/'.$clean);
             }
+
+            return asset($clean);
         }
 
         // Foto ruko komersial modern berkualitas tinggi untuk tiap ruko

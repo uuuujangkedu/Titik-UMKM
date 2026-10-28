@@ -146,7 +146,7 @@
 
                                     <!-- Tombol Setor Dividen Cepat -->
                                     <button type="button" 
-                                            onclick="openSetorDividenModal('{{ $notif->id_investasi }}', '{{ addslashes($notif->pengguna->name) }}', '{{ addslashes($notif->pengguna->bank_name ?? 'Belum Diatur') }}', '{{ $notif->pengguna->nomor_rekening ?? '-' }}', '{{ addslashes($notif->pengguna->nama_pemilik_rekening ?? $notif->pengguna->name) }}')"
+                                            onclick="openSetorDividenModal('{{ $notif->id_investasi }}', '{{ addslashes($notif->pengguna?->name ?? 'Mitra Investor') }}', '{{ addslashes($notif->pengguna?->bank_name ?? 'Belum Diatur') }}', '{{ $notif->pengguna?->nomor_rekening ?? '-' }}', '{{ addslashes($notif->pengguna?->nama_pemilik_rekening ?? ($notif->pengguna?->name ?? 'Mitra Investor')) }}')"
                                             class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -155,8 +155,8 @@
                                     </button>
                                 @endif
 
-                                @if(!empty($notif->pengguna->phone_number))
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $notif->pengguna->phone_number) }}?text=Halo%20{{ urlencode($notif->pengguna->name) }},%20terima%20kasih%20atas%20minat%20investasi%20Anda%20di%20usaha%20{{ urlencode($umkm->nama_usaha) }}%20melalui%20DAYA%20UMKM." 
+                                @if(!empty($notif->pengguna?->phone_number))
+                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $notif->pengguna->phone_number) }}?text=Halo%20{{ urlencode($notif->pengguna?->name ?? 'Investor') }},%20terima%20kasih%20atas%20minat%20investasi%20Anda%20di%20usaha%20{{ urlencode($umkm->nama_usaha) }}%20melalui%20DAYA%20UMKM." 
                                        target="_blank"
                                        class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -427,33 +427,324 @@
             </div>
         @endif
 
-        <!-- FITUR SINERGI 2 (KARTU 1): RINGKASAN MODAL & DIVIDEN -->
-        <div class="card-soft p-6 sm:p-8">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-                <div class="max-w-xl">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.12em] bg-[#20675D]/10 text-[#20675D] border border-[#7BAE91]/40">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#7BAE91]"></span>
-                        Sinergi Finansial Riil
-                    </span>
-                    <h2 class="text-lg sm:text-xl font-bold text-[#1A202C] mt-3 tracking-tight">
-                        Mitra Pemodal &amp; Pembagian Dividen Usaha
+        <!-- ========================================================================= -->
+        <!-- FITUR MILESTONE PENDANAAN & INVESTOR TRACKER (Pusat Progres Modal UMKM)  -->
+        <!-- ========================================================================= -->
+        <div class="card-soft p-6 sm:p-8 space-y-6">
+            <!-- Header Milestone & Tombol Atur Target -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-[#E8E6DF]">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.12em] bg-emerald-50 text-emerald-800 border border-emerald-300">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            🎯 MILESTONE PENDANAAN &amp; SINDIKASI INVESTOR
+                        </span>
+                        <span class="text-xs text-gray-400 font-medium hidden sm:inline">&bull; Real-time Platform Tracker</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black text-[#1A202C] mt-2 tracking-tight">
+                        Progres Modal &amp; Mitra Investor Usaha
                     </h2>
-                    <p class="text-xs sm:text-sm text-[#555555] font-medium mt-1 leading-relaxed">
-                        Kelola dana kemitraan dari investor dan salurkan dividen bagi hasil langsung ke rekening bank mereka.
+                    <p class="text-xs sm:text-sm text-[#555555] font-medium mt-1 leading-relaxed max-w-2xl">
+                        Pantau sejauh mana target modal usaha <strong>{{ $umkm->nama_usaha }}</strong> telah didanai, berapa banyak mitra investor yang telah bergabung, serta tahapan milestone operasional yang telah dicapai.
                     </p>
                 </div>
 
-                <!-- Ringkasan Akumulasi Modal & Dividen -->
-                <div class="flex items-stretch gap-3 shrink-0">
-                    <div class="px-4 py-3 rounded-xl bg-[#EFF5F1]/80 text-left">
-                        <span class="text-[10px] font-semibold text-[#20675D] uppercase tracking-[0.08em] block">Modal Investor Terkumpul</span>
-                        <span class="text-sm font-bold text-[#0F433C] mt-0.5 block">Rp {{ number_format($totalModalTerkumpul ?? 0, 0, ',', '.') }}</span>
+                <div class="flex items-center gap-2 self-start lg:self-center shrink-0">
+                    <a href="{{ route('dashboard', ['tab' => 'profil']) }}" 
+                       class="px-4 py-2.5 rounded-xl border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        <span>Ubah Target Modal</span>
+                    </a>
+                    @if(isset($investasiAktif) && $investasiAktif->isNotEmpty())
+                        <a href="#daftar-mitra-investor" 
+                           class="px-4 py-2.5 rounded-xl bg-[#0F433C] hover:bg-[#19584F] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                            <svg class="w-4 h-4 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                            <span>Kelola Dividen</span>
+                        </a>
+                    @endif
+                </div>
+            </div>
+
+            <!-- 4 KARTU METRIK UTAMA PENDANAAN & INVESTOR -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Metrik 1: Dana Terkumpul -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-50/70 to-teal-50/40 border border-emerald-200/80 shadow-xs">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800">Dana Terkumpul</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+                            💰
+                        </div>
                     </div>
-                    <div class="px-4 py-3 rounded-xl bg-[#FBF6EA]/80 text-left">
-                        <span class="text-[10px] font-semibold text-amber-800 uppercase tracking-[0.08em] block">Total Dividen Disetor</span>
-                        <span class="text-sm font-bold text-amber-900 mt-0.5 block">Rp {{ number_format($totalDividenDisetor ?? 0, 0, ',', '.') }}</span>
+                    <div class="text-xl sm:text-2xl font-black text-[#0F433C]">
+                        Rp {{ number_format($totalModalTerkumpul ?? 0, 0, ',', '.') }}
+                    </div>
+                    <div class="text-[11px] text-gray-500 font-medium mt-1">
+                        Target: <span class="font-bold text-gray-700">Rp {{ number_format($targetModalUmkm ?? 0, 0, ',', '.') }}</span>
                     </div>
                 </div>
+
+                <!-- Metrik 2: Investor yang Berinvestasi -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-blue-50/70 to-indigo-50/40 border border-blue-200/80 shadow-xs">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-blue-800">Total Investor</span>
+                        <div class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
+                            👥
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-xl sm:text-2xl font-black text-blue-950">{{ $jumlahInvestorAktif ?? 0 }}</span>
+                        <span class="text-xs font-bold text-blue-800">Orang Investor</span>
+                    </div>
+                    <div class="text-[11px] text-gray-500 font-medium mt-1 flex items-center gap-1">
+                        <span>{{ $investasiAktif->count() }} Kontrak Aktif</span>
+                        @if(($jumlahInvestorPending ?? 0) > 0)
+                            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-amber-200 text-amber-900">+{{ $jumlahInvestorPending }} Pending</span>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Metrik 3: Persentase Milestone Terpenuhi -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-50/70 to-yellow-50/40 border border-amber-200/80 shadow-xs">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-amber-900">Milestone Terpenuhi</span>
+                        <div class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold">
+                            📈
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-xl sm:text-2xl font-black text-amber-950">{{ $persentaseMilestone ?? 0 }}%</span>
+                        <span class="text-xs font-bold text-amber-800">Tercapai</span>
+                    </div>
+                    <div class="text-[11px] text-gray-500 font-medium mt-1">
+                        @if(($sisaModalDibutuhkan ?? 0) > 0)
+                            Sisa: <span class="font-bold text-rose-600">Rp {{ number_format($sisaModalDibutuhkan, 0, ',', '.') }}</span>
+                        @else
+                            <span class="font-bold text-emerald-700">✓ Target 100% Penuh!</span>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Metrik 4: Total Dividen Disetor -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-purple-50/70 to-fuchsia-50/40 border border-purple-200/80 shadow-xs">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-purple-900">Dividen Disetor</span>
+                        <div class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs font-bold">
+                            🤝
+                        </div>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-black text-purple-950">
+                        Rp {{ number_format($totalDividenDisetor ?? 0, 0, ',', '.') }}
+                    </div>
+                    <div class="text-[11px] text-gray-500 font-medium mt-1">
+                        Bagi hasil riil ke rekening investor
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUAL PROGRESS BAR & MILESTONE ROADMAP (4 TAHAPAN STRATEGIS) -->
+            <div class="p-5 sm:p-6 rounded-2xl bg-[#FBF9F4] border border-[#E8E6DF] space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-gray-500">Roadmap Tahapan Milestone Usaha</span>
+                        <h3 class="text-sm sm:text-base font-extrabold text-[#1A202C]">
+                            Realisasi Pendanaan: {{ $persentaseMilestone }}% dari Target Rp {{ number_format($targetModalUmkm, 0, ',', '.') }}
+                        </h3>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs font-bold">
+                        @if($persentaseMilestone >= 100)
+                            <span class="px-3 py-1 rounded-full bg-emerald-600 text-white shadow-xs">🏆 Sindikasi Penuh (100%)</span>
+                        @elseif($persentaseMilestone >= 75)
+                            <span class="px-3 py-1 rounded-full bg-teal-700 text-white shadow-xs">🚀 Tahap 3: Ekspansi Pasar</span>
+                        @elseif($persentaseMilestone >= 50)
+                            <span class="px-3 py-1 rounded-full bg-amber-600 text-white shadow-xs">⚙️ Tahap 2: Operasional Skala</span>
+                        @elseif($persentaseMilestone >= 25)
+                            <span class="px-3 py-1 rounded-full bg-blue-600 text-white shadow-xs">🌱 Tahap 1: Modal Awal</span>
+                        @else
+                            <span class="px-3 py-1 rounded-full bg-gray-600 text-white shadow-xs">⏳ Menunggu Investor Perdana</span>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Progress Bar Utama -->
+                <div class="relative w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner p-0.5">
+                    <div class="h-full rounded-full transition-all duration-700 ease-out" 
+                         style="width: {{ max(4, min(100, $persentaseMilestone)) }}%; background: linear-gradient(90deg, #0F766E 0%, #10B981 60%, #F59E0B 100%);">
+                    </div>
+                </div>
+
+                <!-- 4 Kotak Milestone Stages -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+                    <!-- Tahap 1 (25%) -->
+                    <div class="p-3.5 rounded-xl border {{ $persentaseMilestone >= 25 ? 'bg-emerald-50/90 border-emerald-300' : ($persentaseMilestone > 0 ? 'bg-amber-50/80 border-amber-300' : 'bg-white border-gray-200 opacity-70') }} flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] font-black uppercase tracking-wider {{ $persentaseMilestone >= 25 ? 'text-emerald-800' : 'text-gray-500' }}">Tahap 1 &bull; 25%</span>
+                                <span class="text-xs font-black">
+                                    {{ $persentaseMilestone >= 25 ? '✅ Tercapai' : ($persentaseMilestone > 0 ? '⚡ Berjalan' : '⏳ Belum') }}
+                                </span>
+                            </div>
+                            <h4 class="text-xs font-extrabold text-[#1A202C]">Modal Awal &amp; Legalitas</h4>
+                            <p class="text-[11px] text-gray-600 mt-1 leading-snug">Pengadaan bahan baku awal dan perlengkapan dasar operasional.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-500 mt-2 block">Min. Rp {{ number_format($targetModalUmkm * 0.25, 0, ',', '.') }}</span>
+                    </div>
+
+                    <!-- Tahap 2 (50%) -->
+                    <div class="p-3.5 rounded-xl border {{ $persentaseMilestone >= 50 ? 'bg-emerald-50/90 border-emerald-300' : ($persentaseMilestone >= 25 ? 'bg-amber-50/80 border-amber-300' : 'bg-white border-gray-200 opacity-70') }} flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] font-black uppercase tracking-wider {{ $persentaseMilestone >= 50 ? 'text-emerald-800' : 'text-gray-500' }}">Tahap 2 &bull; 50%</span>
+                                <span class="text-xs font-black">
+                                    {{ $persentaseMilestone >= 50 ? '✅ Tercapai' : ($persentaseMilestone >= 25 ? '⚡ Berjalan' : '🔒 Terkunci') }}
+                                </span>
+                            </div>
+                            <h4 class="text-xs font-extrabold text-[#1A202C]">Operasional &amp; Sewa Ruko</h4>
+                            <p class="text-[11px] text-gray-600 mt-1 leading-snug">Sewa tempat komersial dan pembelian mesin/alat produksi modern.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-500 mt-2 block">Min. Rp {{ number_format($targetModalUmkm * 0.50, 0, ',', '.') }}</span>
+                    </div>
+
+                    <!-- Tahap 3 (75%) -->
+                    <div class="p-3.5 rounded-xl border {{ $persentaseMilestone >= 75 ? 'bg-emerald-50/90 border-emerald-300' : ($persentaseMilestone >= 50 ? 'bg-amber-50/80 border-amber-300' : 'bg-white border-gray-200 opacity-70') }} flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] font-black uppercase tracking-wider {{ $persentaseMilestone >= 75 ? 'text-emerald-800' : 'text-gray-500' }}">Tahap 3 &bull; 75%</span>
+                                <span class="text-xs font-black">
+                                    {{ $persentaseMilestone >= 75 ? '✅ Tercapai' : ($persentaseMilestone >= 50 ? '⚡ Berjalan' : '🔒 Terkunci') }}
+                                </span>
+                            </div>
+                            <h4 class="text-xs font-extrabold text-[#1A202C]">Pemasaran &amp; Influencer</h4>
+                            <p class="text-[11px] text-gray-600 mt-1 leading-snug">Kampanye endorsement influencer lokal dan perluasan jangkauan pasar.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-500 mt-2 block">Min. Rp {{ number_format($targetModalUmkm * 0.75, 0, ',', '.') }}</span>
+                    </div>
+
+                    <!-- Tahap 4 (100%) -->
+                    <div class="p-3.5 rounded-xl border {{ $persentaseMilestone >= 100 ? 'bg-emerald-50/90 border-emerald-300' : ($persentaseMilestone >= 75 ? 'bg-amber-50/80 border-amber-300' : 'bg-white border-gray-200 opacity-70') }} flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] font-black uppercase tracking-wider {{ $persentaseMilestone >= 100 ? 'text-emerald-800' : 'text-gray-500' }}">Tahap 4 &bull; 100%</span>
+                                <span class="text-xs font-black">
+                                    {{ $persentaseMilestone >= 100 ? '🏆 Penuh!' : ($persentaseMilestone >= 75 ? '⚡ Mendekati' : '🔒 Terkunci') }}
+                                </span>
+                            </div>
+                            <h4 class="text-xs font-extrabold text-[#1A202C]">Target Tercapai (Penuh)</h4>
+                            <p class="text-[11px] text-gray-600 mt-1 leading-snug">Sindikasi pendanaan ditutup, kapasitas maksimal dan dividen optimal.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-gray-500 mt-2 block">Target Rp {{ number_format($targetModalUmkm, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAFTAR ORANG / INVESTOR YANG MENDANAI USAHA ANDA -->
+            <div class="pt-2">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-[#0F433C] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                            👥
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-extrabold text-[#1A202C]">
+                                Daftar Investor yang Berinvestasi ({{ $jumlahInvestorAktif ?? 0 }} Investor Aktif)
+                            </h3>
+                            <p class="text-[11px] text-gray-500">
+                                Rincian mitra pemodal yang telah menyalurkan modal investasi riil ke usaha Anda
+                            </p>
+                        </div>
+                    </div>
+                    @if(isset($investasiAktif) && $investasiAktif->isNotEmpty())
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            {{ $investasiAktif->count() }} Porsi Investasi
+                        </span>
+                    @endif
+                </div>
+
+                @if(isset($investasiAktif) && $investasiAktif->isNotEmpty())
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($investasiAktif as $inv)
+                            <div class="p-4 rounded-2xl bg-white border border-[#E8E6DF] hover:border-teal-600 transition shadow-xs flex flex-col justify-between gap-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-11 h-11 rounded-full bg-[#0F433C] text-white flex items-center justify-center font-black text-sm shrink-0 border-2 border-emerald-400/40 shadow-sm">
+                                            {{ strtoupper(substr($inv->pengguna->name ?? 'I', 0, 2)) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-1.5">
+                                                <h4 class="text-xs sm:text-sm font-extrabold text-[#1A202C] truncate">
+                                                    {{ $inv->pengguna->name ?? 'Mitra Investor' }}
+                                                </h4>
+                                                <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[8px] font-black shrink-0" title="Investor Terverifikasi">✓</span>
+                                            </div>
+                                            <span class="text-[10px] text-gray-400 block">
+                                                Bergabung: {{ $inv->tanggal_investasi ? $inv->tanggal_investasi->translatedFormat('d M Y') : '-' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                        Aktif
+                                    </span>
+                                </div>
+
+                                <div class="p-3 rounded-xl bg-gray-50 border border-gray-100 space-y-1 text-xs">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-500 text-[11px]">Modal Diinvestasikan:</span>
+                                        <span class="font-black text-[#0F433C] text-xs sm:text-sm">Rp {{ number_format($inv->jumlah_modal, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-500 text-[11px]">Bagi Hasil:</span>
+                                        <span class="font-bold text-gray-700 text-[11px]">{{ $inv->persentase_bagi_hasil }}% ({{ $inv->periode_pembagian }})</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-500 text-[11px]">Porsi dari Target:</span>
+                                        <span class="font-bold text-teal-700 text-[11px]">
+                                            {{ $targetModalUmkm > 0 ? round(($inv->jumlah_modal / $targetModalUmkm) * 100, 1) : 0 }}%
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-2 pt-1">
+                                    <a href="{{ route('kontrak.show', $inv->id_investasi) }}" 
+                                       class="flex-1 py-2 px-3 rounded-xl text-center text-[11px] font-bold text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200 transition">
+                                        📄 Akad &amp; E-Sign
+                                    </a>
+                                    @if(!empty($inv->pengguna?->phone_number))
+                                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $inv->pengguna->phone_number) }}?text=Halo%20{{ urlencode($inv->pengguna->name) }},%20terima%20kasih%20telah%20menjadi%20investor%20di%20{{ urlencode($umkm->nama_usaha) }}."
+                                           target="_blank"
+                                           class="p-2 rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition"
+                                           title="Hubungi via WhatsApp">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.99.54 2.012.85 2.796.85 3.177 0 5.766-2.587 5.766-5.766 0-3.18-2.586-5.767-5.766-5.767zm7.55 5.766c0 4.164-3.393 7.552-7.55 7.552-1.312 0-2.539-.344-3.61-.951l-4.043 1.059 1.082-3.947c-.707-1.144-1.116-2.483-1.116-3.713 0-4.165 3.39-7.553 7.55-7.553 4.163 0 7.687 3.388 7.687 7.552z"/></svg>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <!-- STATE JIKA BELUM ADA INVESTOR YANG MENDANAI -->
+                    <div class="p-6 sm:p-8 rounded-2xl bg-white border border-dashed border-gray-300 text-center space-y-3">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-2xl shadow-xs">
+                            🤝
+                        </div>
+                        <h4 class="text-base font-extrabold text-[#1A202C]">Belum Ada Investor yang Mendanai</h4>
+                        <p class="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
+                            Saat ini belum ada investor yang mengalirkan modal ke usaha Anda (<strong>0 Investor</strong>). Target modal yang dibutuhkan adalah <strong>Rp {{ number_format($targetModalUmkm, 0, ',', '.') }}</strong>. Sempurnakan proposal usaha dan gunakan promosi influencer untuk memikat para investor.
+                        </p>
+                        <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
+                            <a href="{{ route('dashboard', ['tab' => 'profil']) }}" 
+                               class="px-4 py-2.5 rounded-xl bg-[#0F433C] hover:bg-[#19584F] text-white text-xs font-bold transition shadow-sm">
+                                📋 Sempurnakan Proposal Usaha
+                            </a>
+                            <a href="{{ route('dashboard', ['tab' => 'influencer']) }}" 
+                               class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition shadow-sm">
+                                📢 Promosikan Usaha ke Influencer
+                            </a>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -560,11 +851,11 @@
                                                     '{{ $spInv->created_at ? $spInv->created_at->addDays(3)->translatedFormat('d F Y') : '' }}',
                                                     `{{ addslashes($spInv->pesan_teguran) }}`,
                                                     '{{ addslashes($spInv->admin->name ?? 'Super Administrator') }}',
-                                                    '{{ addslashes($inv->pengguna->name ?? 'Mitra Investor') }}',
+                                                    '{{ addslashes($inv->pengguna?->name ?? 'Mitra Investor') }}',
                                                     '{{ $inv->id_investasi }}',
-                                                    '{{ addslashes($inv->pengguna->bank_name ?? 'Bank Belum Diatur') }}',
-                                                    '{{ $inv->pengguna->nomor_rekening ?? '-' }}',
-                                                    '{{ addslashes($inv->pengguna->nama_pemilik_rekening ?? $inv->pengguna->name) }}',
+                                                    '{{ addslashes($inv->pengguna?->bank_name ?? 'Bank Belum Diatur') }}',
+                                                    '{{ $inv->pengguna?->nomor_rekening ?? '-' }}',
+                                                    '{{ addslashes($inv->pengguna?->nama_pemilik_rekening ?? ($inv->pengguna?->name ?? 'Mitra Investor')) }}',
                                                     '{{ $spInv->id_teguran }}'
                                                 )"
                                                 class="px-3 py-1.5 rounded-xl font-bold text-[11px] shadow-sm transition shrink-0 whitespace-nowrap cursor-pointer hover:opacity-90"
@@ -587,7 +878,7 @@
                                 </a>
 
                                 <button type="button"
-                                        onclick="openSetorDividenModal('{{ $inv->id_investasi }}', '{{ addslashes($inv->pengguna->name) }}', '{{ addslashes($inv->pengguna->bank_name ?? 'Bank Belum Diatur') }}', '{{ $inv->pengguna->nomor_rekening ?? '-' }}', '{{ addslashes($inv->pengguna->nama_pemilik_rekening ?? $inv->pengguna->name) }}')"
+                                        onclick="openSetorDividenModal('{{ $inv->id_investasi }}', '{{ addslashes($inv->pengguna?->name ?? 'Mitra Investor') }}', '{{ addslashes($inv->pengguna?->bank_name ?? 'Bank Belum Diatur') }}', '{{ $inv->pengguna?->nomor_rekening ?? '-' }}', '{{ addslashes($inv->pengguna?->nama_pemilik_rekening ?? ($inv->pengguna?->name ?? 'Mitra Investor')) }}')"
                                         class="w-full py-2.5 px-3 rounded-xl bg-[#20675D] hover:bg-[#0F433C] text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
                                     <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -596,7 +887,7 @@
                                 </button>
 
                                 <button type="button"
-                                        onclick="openKlarifikasiModal('{{ $inv->id_investasi }}', '{{ addslashes($inv->pengguna->name) }}', '{{ $statusBulanIni['bulan_periode'] }}')"
+                                        onclick="openKlarifikasiModal('{{ $inv->id_investasi }}', '{{ addslashes($inv->pengguna?->name ?? 'Mitra Investor') }}', '{{ $statusBulanIni['bulan_periode'] }}')"
                                         class="w-full py-2 px-3 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold transition flex items-center justify-center gap-1.5">
                                     <span>📝 Ajukan Klarifikasi Kendala</span>
                                 </button>
@@ -1117,7 +1408,7 @@
                                             <span style="color: #ffffff !important; font-weight: 800; font-size: 12px;">Akad & E-Sign</span>
                                         </a>
                                         <button type="button" 
-                                                onclick="openSetorDividenModal('{{ $selectedInvestasi->id_investasi }}', '{{ addslashes($selectedInvestasi->pengguna->name) }}', '{{ addslashes($selectedInvestasi->pengguna->bank_name ?? 'Belum Diatur') }}', '{{ $selectedInvestasi->pengguna->nomor_rekening ?? '-' }}', '{{ addslashes($selectedInvestasi->pengguna->nama_pemilik_rekening ?? $selectedInvestasi->pengguna->name) }}')"
+                                                onclick="openSetorDividenModal('{{ $selectedInvestasi->id_investasi }}', '{{ addslashes($selectedInvestasi->pengguna?->name ?? 'Mitra Investor') }}', '{{ addslashes($selectedInvestasi->pengguna?->bank_name ?? 'Belum Diatur') }}', '{{ $selectedInvestasi->pengguna?->nomor_rekening ?? '-' }}', '{{ addslashes($selectedInvestasi->pengguna?->nama_pemilik_rekening ?? ($selectedInvestasi->pengguna?->name ?? 'Mitra Investor')) }}')"
                                                 class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5">
                                             <span>💸 Setor Dividen</span>
                                         </button>
@@ -1174,7 +1465,7 @@
                     <!-- FORM KIRIM PESAN CHAT LANGSUNG DI DALAM WEB -->
                     <form action="{{ route('dashboard.investasi.pesan', $selectedInvestasi->id_investasi) }}" method="POST" class="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2">
                         @csrf
-                        <input type="text" name="pesan" required placeholder="Tulis pesan atau pertanyaan untuk {{ $selectedInvestasi->pengguna->name }}..."
+                        <input type="text" name="pesan" required placeholder="Tulis pesan atau pertanyaan untuk {{ $selectedInvestasi->pengguna?->name ?? 'Investor' }}..."
                                class="flex-1 px-4 py-3 rounded-2xl border border-[#E8E6DF] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#0F433C]">
                         <button type="submit" class="px-5 py-3 rounded-2xl bg-[#0F433C] hover:bg-[#20675D] text-white text-xs font-black transition shadow-sm flex items-center gap-1.5 shrink-0">
                             <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2538,7 +2829,12 @@
                     <div>
                         <div class="w-full h-44 rounded-2xl bg-gray-100 mb-4 overflow-hidden shadow-inner border border-gray-100 relative">
                             @if(!empty($ruko->foto_ruko))
-                                <img src="{{ asset($ruko->foto_ruko) }}" alt="{{ $ruko->nama_ruko }}" class="w-full h-full object-cover">
+                                <img src="{{ asset(ltrim($ruko->foto_ruko, '/\\')) }}" alt="{{ $ruko->nama_ruko }}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                     onerror="this.onerror=null; this.src='{{ $ruko->foto_url }}';">
+                            @elseif(!empty($ruko->foto_url))
+                                <img src="{{ $ruko->foto_url }}" alt="{{ $ruko->nama_ruko }}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             @else
                                 <div class="w-full h-full bg-[#7BAE91] text-white flex items-center justify-center font-bold">
                                     <div class="text-center">
@@ -2573,6 +2869,21 @@
                             <span class="text-rose-500">📍</span>
                             <span>{{ $ruko->lokasi }}</span>
                         </p>
+
+                        <!-- Rating Potensi Lokasi & Kurasi Ruko -->
+                        <div class="mt-2.5 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-1.5">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-black">
+                                    <span class="text-amber-500">★</span>
+                                    <span>{{ number_format($ruko->rating_lokasi, 1) }}</span>
+                                </span>
+                                <span class="text-gray-400 text-[11px] font-medium">Skor Kelayakan Lokasi</span>
+                            </div>
+                            <span class="text-[11px] font-bold text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                                ✓ Terkurasi TIKUM
+                            </span>
+                        </div>
+
                         @if(!empty($ruko->deskripsi_potensi))
                             <p class="text-[11px] text-gray-600 mt-2 line-clamp-2 italic">
                                 "{{ $ruko->deskripsi_potensi }}"
@@ -3280,11 +3591,11 @@
                         class="w-full px-4 py-2.5 rounded-xl border border-[#E8E6DF] text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#0F433C]">
                     @foreach($investasiAktif as $inv)
                         <option value="{{ $inv->id_investasi }}"
-                                data-investor="{{ $inv->pengguna->name }}"
-                                data-bank="{{ $inv->pengguna->bank_name ?? 'Bank Belum Diatur' }}"
-                                data-rek="{{ $inv->pengguna->nomor_rekening ?? '-' }}"
-                                data-nama="{{ $inv->pengguna->nama_pemilik_rekening ?? $inv->pengguna->name }}">
-                            {{ $inv->pengguna->name }} - Modal Rp {{ number_format($inv->jumlah_modal, 0, ',', '.') }} (Bagi Hasil {{ $inv->persentase_bagi_hasil }}%)
+                                data-investor="{{ $inv->pengguna?->name ?? 'Mitra Investor' }}"
+                                data-bank="{{ $inv->pengguna?->bank_name ?? 'Bank Belum Diatur' }}"
+                                data-rek="{{ $inv->pengguna?->nomor_rekening ?? '-' }}"
+                                data-nama="{{ $inv->pengguna?->nama_pemilik_rekening ?? ($inv->pengguna?->name ?? 'Mitra Investor') }}">
+                            {{ $inv->pengguna?->name ?? 'Mitra Investor' }} - Modal Rp {{ number_format($inv->jumlah_modal, 0, ',', '.') }} (Bagi Hasil {{ $inv->persentase_bagi_hasil }}%)
                         </option>
                     @endforeach
                 </select>

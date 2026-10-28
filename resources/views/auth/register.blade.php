@@ -325,7 +325,6 @@
                 if (icon) {
                     icon.className = 'indicator-icon w-3.5 h-3.5 rounded-full border border-gray-400 flex items-center justify-center text-[9px] font-bold';
                     icon.textContent = '•';
-                    }
                 }
             }
         }

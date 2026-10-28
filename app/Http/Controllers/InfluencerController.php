@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\InfluencerOrder;
 use App\Models\InfluencerProfile;
-use App\Models\Investasi;
-use App\Models\Produk;
 use App\Models\Umkm;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class InfluencerController extends Controller
@@ -45,14 +42,14 @@ class InfluencerController extends Controller
         // Ambil pesanan yang aktif / sedang berjalan
         $activeOrders = InfluencerOrder::with(['umkm', 'investor', 'pemesan', 'produk'])
             ->where('influencer_id', $profile->id)
-            ->whereIn('status', ['menunggu_respon_influencer', 'sedang_dikerjakan', 'menunggu_verifikasi'])
+            ->whereIn('status', ['menunggu_respon_influencer', 'menunggu_pembayaran_escrow', 'sedang_dikerjakan', 'menunggu_verifikasi'])
             ->latest()
             ->get();
 
         // Ambil riwayat pesanan selesai / ditolak
         $historyOrders = InfluencerOrder::with(['umkm', 'investor', 'pemesan', 'produk'])
             ->where('influencer_id', $profile->id)
-            ->whereIn('status', ['selesai', 'ditolak_influencer', 'dibatalkan'])
+            ->whereIn('status', ['selesai', 'ditolak_influencer', 'ditolak_investor', 'dibatalkan'])
             ->latest()
             ->paginate(10);
 
@@ -129,7 +126,7 @@ class InfluencerController extends Controller
             default => $influencer->rate_reels_tiktok,
         };
 
-        $kodeOrder = 'INF-' . strtoupper(Str::random(4)) . '-' . date('Ymd');
+        $kodeOrder = 'INF-'.strtoupper(Str::random(4)).'-'.date('Ymd');
 
         InfluencerOrder::create([
             'kode_order' => $kodeOrder,
@@ -147,7 +144,7 @@ class InfluencerController extends Controller
             'status' => 'menunggu_respon_influencer',
         ]);
 
-        return back()->with('success', 'Pesanan promosi #' . $kodeOrder . ' senilai Rp ' . number_format($biaya, 0, ',', '.') . ' berhasil diajukan dan sedang menunggu konfirmasi kreator!');
+        return back()->with('success', 'Pesanan promosi #'.$kodeOrder.' senilai Rp '.number_format($biaya, 0, ',', '.').' berhasil diajukan dan sedang menunggu konfirmasi kreator!');
     }
 
     /**
@@ -178,7 +175,7 @@ class InfluencerController extends Controller
             default => $influencer->rate_reels_tiktok,
         };
 
-        $kodeOrder = 'SPO-' . strtoupper(Str::random(4)) . '-' . date('Ymd');
+        $kodeOrder = 'SPO-'.strtoupper(Str::random(4)).'-'.date('Ymd');
 
         InfluencerOrder::create([
             'kode_order' => $kodeOrder,
@@ -191,12 +188,12 @@ class InfluencerController extends Controller
             'biaya' => $biaya,
             'produk_id' => $validated['produk_id'] ?? null,
             'nama_campaign' => $validated['nama_campaign'],
-            'catatan_brief' => $validated['catatan_brief'] . "\n[Catatan Sponsor Investor: Didanai penuh oleh Mitra Investor " . $investor->name . "]",
+            'catatan_brief' => $validated['catatan_brief']."\n[Catatan Sponsor Investor: Didanai penuh oleh Mitra Investor ".$investor->name.']',
             'target_selesai' => $validated['target_selesai'] ?? now()->addDays(7),
             'status' => 'menunggu_respon_influencer',
         ]);
 
-        return back()->with('success', 'Sponsor promosi #' . $kodeOrder . ' senilai Rp ' . number_format($biaya, 0, ',', '.') . ' untuk UMKM ' . $umkm->nama_usaha . ' berhasil disalurkan ke kreator!');
+        return redirect()->route('dashboard', ['tab' => 'influencer'])->with('success', 'Sponsor promosi #'.$kodeOrder.' senilai Rp '.number_format($biaya, 0, ',', '.').' untuk UMKM '.$umkm->nama_usaha.' berhasil disalurkan ke kreator! Silakan lakukan penyetoran dana sponsor melalui Rekber Escrow di bawah agar produksi konten dapat segera dimulai.');
     }
 
     /**
@@ -227,7 +224,7 @@ class InfluencerController extends Controller
             default => $influencer->rate_reels_tiktok,
         };
 
-        $kodeOrder = 'REQ-' . strtoupper(Str::random(4)) . '-' . date('Ymd');
+        $kodeOrder = 'REQ-'.strtoupper(Str::random(4)).'-'.date('Ymd');
 
         InfluencerOrder::create([
             'kode_order' => $kodeOrder,
@@ -245,7 +242,7 @@ class InfluencerController extends Controller
             'status' => 'menunggu_persetujuan_investor',
         ]);
 
-        return back()->with('success', 'Pengajuan sponsor promosi #' . $kodeOrder . ' senilai Rp ' . number_format($biaya, 0, ',', '.') . ' telah dikirim ke Investor Anda untuk disetujui!');
+        return back()->with('success', 'Pengajuan sponsor promosi #'.$kodeOrder.' senilai Rp '.number_format($biaya, 0, ',', '.').' telah dikirim ke Investor Anda untuk disetujui!');
     }
 
     /**
@@ -263,7 +260,7 @@ class InfluencerController extends Controller
             'status' => 'menunggu_respon_influencer',
         ]);
 
-        return back()->with('success', 'Pengajuan sponsor #' . $order->kode_order . ' senilai Rp ' . number_format($order->biaya, 0, ',', '.') . ' berhasil disetujui dan diteruskan ke kreator!');
+        return back()->with('success', 'Pengajuan sponsor #'.$order->kode_order.' senilai Rp '.number_format($order->biaya, 0, ',', '.').' berhasil disetujui dan diteruskan ke kreator!');
     }
 
     /**
@@ -286,7 +283,7 @@ class InfluencerController extends Controller
             'alasan_penolakan' => $validated['alasan_penolakan'] ?? 'Investor saat ini belum dapat menyetujui pengajuan promosi ini.',
         ]);
 
-        return back()->with('info', 'Pengajuan sponsor promosi #' . $order->kode_order . ' telah ditolak.');
+        return back()->with('info', 'Pengajuan sponsor promosi #'.$order->kode_order.' telah ditolak.');
     }
 
     /**
@@ -302,11 +299,68 @@ class InfluencerController extends Controller
             ->where('status', 'menunggu_respon_influencer')
             ->firstOrFail();
 
+        $statusBaru = ($order->status_pembayaran === 'lunas_escrow') ? 'sedang_dikerjakan' : 'menunggu_pembayaran_escrow';
         $order->update([
-            'status' => 'sedang_dikerjakan',
+            'status' => $statusBaru,
         ]);
 
-        return back()->with('success', 'Pesanan #' . $order->kode_order . ' berhasil diterima! Silakan mulai produksi konten sesuai brief.');
+        $pesan = ($statusBaru === 'sedang_dikerjakan')
+            ? 'Pesanan #'.$order->kode_order.' berhasil diterima! Dana telah diamankan dan Anda dapat mulai produksi konten.'
+            : 'Pesanan #'.$order->kode_order.' berhasil disetujui! Sistem sedang menunggu pemesan menyelesaikan deposit pembayaran ke Rekening Bersama (Escrow) Titik-UMKM.';
+
+        return back()->with('success', $pesan);
+    }
+
+    /**
+     * Pemesan (UMKM atau Investor) Mengunggah Bukti Pembayaran ke Rekber Escrow Platform
+     */
+    public function bayarEscrow(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        $order = InfluencerOrder::where('id', $id)
+            ->where(function ($q) use ($user) {
+                $q->where('pemesan_user_id', $user->id)
+                    ->orWhere('investor_id', $user->id);
+            })
+            ->whereIn('status', ['menunggu_pembayaran_escrow', 'menunggu_respon_influencer', 'sedang_dikerjakan'])
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'bank_pengirim' => ['required', 'string', 'max:100'],
+            'nama_pengirim' => ['required', 'string', 'max:100'],
+            'nomor_rekening_pengirim' => ['nullable', 'string', 'max:50'],
+            'bukti_transfer' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'catatan_pembayaran' => ['nullable', 'string', 'max:500'],
+        ], [
+            'bank_pengirim.required' => 'Pilih atau masukkan nama bank pengirim.',
+            'nama_pengirim.required' => 'Nama pemilik rekening pengirim wajib diisi.',
+            'bukti_transfer.required' => 'Unggah foto struk bukti transfer pembayaran Anda.',
+            'bukti_transfer.image' => 'File bukti transfer harus berupa gambar (JPG, PNG, atau WEBP).',
+            'bukti_transfer.max' => 'Ukuran file bukti transfer maksimal 5MB.',
+        ]);
+
+        $file = $request->file('bukti_transfer');
+        $fileName = 'struk_escrow_'.time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+        $destinationPath = public_path('uploads/bukti_transfer');
+        if (! file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+        $file->move($destinationPath, $fileName);
+        $filePath = '/uploads/bukti_transfer/'.$fileName;
+
+        $order->update([
+            'bukti_transfer_pemesan' => $filePath,
+            'bank_pengirim' => $validated['bank_pengirim'],
+            'nama_pengirim' => $validated['nama_pengirim'],
+            'nomor_rekening_pengirim' => $validated['nomor_rekening_pengirim'] ?? null,
+            'waktu_transfer' => now(),
+            'status_pembayaran' => 'lunas_escrow',
+            'catatan_pembayaran' => $validated['catatan_pembayaran'] ?? null,
+            'status' => ($order->status === 'menunggu_pembayaran_escrow' ? 'sedang_dikerjakan' : $order->status),
+        ]);
+
+        return back()->with('success', 'Bukti transfer berhasil diunggah! Dana sebesar Rp '.number_format($order->biaya, 0, ',', '.').' telah diamankan di Rekber Escrow Titik-UMKM. Kreator kini dapat segera memproduksi konten promosi Anda.');
     }
 
     /**
@@ -331,7 +385,7 @@ class InfluencerController extends Controller
             'alasan_penolakan' => $validated['alasan_penolakan'] ?? 'Jadwal kreator sedang padat.',
         ]);
 
-        return back()->with('info', 'Pesanan #' . $order->kode_order . ' telah ditolak.');
+        return back()->with('info', 'Pesanan #'.$order->kode_order.' telah ditolak.');
     }
 
     /**
@@ -347,10 +401,23 @@ class InfluencerController extends Controller
             ->whereIn('status', ['sedang_dikerjakan', 'menunggu_verifikasi'])
             ->firstOrFail();
 
+        if ($request->filled('link_bukti_konten')) {
+            $link = trim($request->input('link_bukti_konten'));
+            if (! preg_match('~^(?:f|ht)tps?://~i', $link)) {
+                $link = 'https://'.$link;
+            }
+            $request->merge(['link_bukti_konten' => $link]);
+        }
+
         $validated = $request->validate([
             'link_bukti_konten' => ['required', 'url', 'max:255'],
             'screenshot_insight' => ['nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'catatan_influencer' => ['nullable', 'string', 'max:1000'],
+        ], [
+            'link_bukti_konten.required' => 'Tautan / link bukti video postingan wajib diisi.',
+            'link_bukti_konten.url' => 'Format tautan link video konten tidak valid (contoh: https://www.tiktok.com/@user/video/123).',
+            'screenshot_insight.image' => 'File insight harus berupa gambar (JPG, PNG, atau WEBP).',
+            'screenshot_insight.max' => 'Ukuran file screenshot insight maksimal 4MB.',
         ]);
 
         $screenshotPath = $order->screenshot_insight;
@@ -401,7 +468,33 @@ class InfluencerController extends Controller
             $influencer->increment('total_selesai');
         }
 
-        return back()->with('success', 'Kampanye promosi #' . $order->kode_order . ' berhasil diselesaikan! Dana Rp ' . number_format($order->biaya, 0, ',', '.') . ' telah dicairkan ke saldo kreator.');
+        return back()->with('success', 'Kampanye promosi #'.$order->kode_order.' berhasil diselesaikan! Dana Rp '.number_format($order->biaya, 0, ',', '.').' telah dicairkan ke saldo kreator.');
+    }
+
+    /**
+     * Penarikan / Pencairan Saldo Honor ke Rekening Bank Influencer
+     */
+    public function tarikSaldo(Request $request)
+    {
+        $user = Auth::user();
+        $profile = InfluencerProfile::where('user_id', $user->id)->firstOrFail();
+
+        $validated = $request->validate([
+            'nominal' => ['required', 'numeric', 'min:50000', 'max:'.$profile->saldo],
+        ], [
+            'nominal.required' => 'Masukkan jumlah nominal yang ingin ditarik.',
+            'nominal.min' => 'Batas minimal penarikan saldo adalah Rp 50.000.',
+            'nominal.max' => 'Nominal melebihi saldo penghasilan Anda saat ini.',
+        ]);
+
+        if (empty($profile->nomor_rekening)) {
+            return back()->with('error', 'Silakan lengkapi nomor rekening bank Anda terlebih dahulu di menu Atur Tarif & Bio.');
+        }
+
+        $nominal = (float) $validated['nominal'];
+        $profile->decrement('saldo', $nominal);
+
+        return back()->with('success', 'Permintaan penarikan saldo sebesar Rp '.number_format($nominal, 0, ',', '.').' berhasil diajukan! Dana akan ditransfer ke rekening '.$profile->bank_name.' ('.$profile->nomor_rekening.') dalam 1x24 jam kerja.');
     }
 
     /**
@@ -436,7 +529,7 @@ class InfluencerController extends Controller
         $user = Auth::user();
 
         // Jika belum login, buat user baru atau minta login
-        if (!$user) {
+        if (! $user) {
             $request->validate([
                 'email' => ['required', 'email', 'unique:users,email'],
                 'password' => ['required', 'string', 'min:6'],
@@ -461,7 +554,7 @@ class InfluencerController extends Controller
         $fotoUrl = null;
         if ($request->hasFile('foto_profil')) {
             $path = $request->file('foto_profil')->store('influencers', 'public');
-            $fotoUrl = '/storage/' . $path;
+            $fotoUrl = '/storage/'.$path;
         }
 
         $profile = InfluencerProfile::updateOrCreate(
@@ -485,6 +578,6 @@ class InfluencerController extends Controller
             ]
         );
 
-        return redirect()->route('dashboard.influencer')->with('success', 'Selamat ' . $profile->nama_panggung . '! Pendaftaran Mitra Influencer Anda telah aktif dan profil Anda langsung tayang di katalog UMKM.');
+        return redirect()->route('dashboard.influencer')->with('success', 'Selamat '.$profile->nama_panggung.'! Pendaftaran Mitra Influencer Anda telah aktif dan profil Anda langsung tayang di katalog UMKM.');
     }
 }

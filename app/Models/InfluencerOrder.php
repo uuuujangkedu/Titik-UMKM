@@ -26,6 +26,13 @@ class InfluencerOrder extends Model
         'catatan_brief',
         'target_selesai',
         'status',
+        'status_pembayaran',
+        'bukti_transfer_pemesan',
+        'bank_pengirim',
+        'nama_pengirim',
+        'nomor_rekening_pengirim',
+        'waktu_transfer',
+        'catatan_pembayaran',
         'alasan_penolakan',
         'link_bukti_konten',
         'screenshot_insight',
@@ -37,8 +44,24 @@ class InfluencerOrder extends Model
     protected $casts = [
         'biaya' => 'float',
         'target_selesai' => 'date',
+        'waktu_transfer' => 'datetime',
         'rating' => 'integer',
     ];
+
+    public function getBuktiTransferPemesanUrlAttribute(): ?string
+    {
+        if (empty($this->bukti_transfer_pemesan)) {
+            return null;
+        }
+
+        if (str_starts_with($this->bukti_transfer_pemesan, 'http://') || str_starts_with($this->bukti_transfer_pemesan, 'https://')) {
+            return $this->bukti_transfer_pemesan;
+        }
+
+        $cleanPath = ltrim($this->bukti_transfer_pemesan, '/');
+
+        return asset($cleanPath);
+    }
 
     public function influencer(): BelongsTo
     {
@@ -81,6 +104,7 @@ class InfluencerOrder extends Model
         return match ($this->status) {
             'menunggu_persetujuan_investor' => ['label' => 'Menunggu Persetujuan Investor', 'color' => 'amber'],
             'menunggu_respon_influencer' => ['label' => 'Menunggu Respon Influencer', 'color' => 'blue'],
+            'menunggu_pembayaran_escrow' => ['label' => 'Menunggu Pembayaran Escrow', 'color' => 'amber'],
             'sedang_dikerjakan' => ['label' => 'Sedang Diproduksi / Dikerjakan', 'color' => 'purple'],
             'menunggu_verifikasi' => ['label' => 'Konten Siap Verifikasi', 'color' => 'orange'],
             'selesai' => ['label' => 'Selesai & Tayang', 'color' => 'emerald'],

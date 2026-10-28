@@ -290,7 +290,12 @@
 
                             <div class="w-full h-40 rounded-2xl bg-gray-100 mb-4 overflow-hidden shadow-inner border border-gray-100">
                                 @if(!empty($ruko->foto_ruko))
-                                    <img src="{{ asset($ruko->foto_ruko) }}" alt="{{ $ruko->nama_ruko }}" class="w-full h-full object-cover">
+                                    <img src="{{ asset(ltrim($ruko->foto_ruko, '/\\')) }}" alt="{{ $ruko->nama_ruko }}" 
+                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                         onerror="this.onerror=null; this.src='{{ $ruko->foto_url }}';">
+                                @elseif(!empty($ruko->foto_url))
+                                    <img src="{{ $ruko->foto_url }}" alt="{{ $ruko->nama_ruko }}" 
+                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                 @else
                                     <div class="w-full h-full bg-[#6B9E8A] text-white flex items-center justify-center font-black text-xl">
                                         <div class="text-center">
@@ -311,6 +316,20 @@
                                 </svg>
                                 <span class="truncate">{{ $ruko->lokasi }}</span>
                             </p>
+
+                            <!-- Rating Potensi Lokasi & Kurasi Ruko -->
+                            <div class="mt-2.5 flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-black">
+                                        <span class="text-amber-500">★</span>
+                                        <span>{{ number_format($ruko->rating_lokasi, 1) }}</span>
+                                    </span>
+                                    <span class="text-gray-400 text-[11px] font-medium">Skor Kelayakan Lokasi</span>
+                                </div>
+                                <span class="text-[11px] font-bold text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                                    ✓ Terkurasi TIKUM
+                                </span>
+                            </div>
 
                             @if(!empty($ruko->deskripsi_potensi))
                                 <p class="text-[11px] text-gray-600 mt-2 line-clamp-2 italic">

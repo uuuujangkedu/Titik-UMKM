@@ -205,8 +205,8 @@ class AuthController extends Controller
                     'kategori' => $validated['kategori_diminati'] ?? 'Kuliner',
                     'kota' => $kota ?? 'Surabaya',
                     'provinsi' => $provinsi ?? 'Jawa Timur',
-                    'status_verifikasi' => 'terverifikasi',
-                    'is_available' => true,
+                    'status_verifikasi' => 'menunggu_verifikasi',
+                    'is_available' => false,
                     'saldo' => 0,
                 ]
             );

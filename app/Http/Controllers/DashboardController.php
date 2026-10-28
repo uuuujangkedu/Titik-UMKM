@@ -49,7 +49,12 @@ class DashboardController extends Controller
                 return redirect()->route('formulir.influencer')->with('info', 'Selamat datang! Silakan lengkapi Formulir Pendaftaran Mitra Influencer Anda di bawah ini.');
             }
 
-            return app(\App\Http\Controllers\InfluencerController::class)->dashboard($request);
+            // JIKA AKUN INFLUENCER BELUM DI-ACC / BELUM AKTIF OLEH ADMIN:
+            if ($user->status !== 'aktif' || $profile->status_verifikasi !== 'terverifikasi') {
+                return view('dashboard.influencer-pending', compact('user', 'profile'));
+            }
+
+            return app(InfluencerController::class)->dashboard($request);
         }
 
         // 3. DASHBOARD PELAKU UMKM (Sesuai Gambar 2 Mockup)
@@ -148,6 +153,14 @@ class DashboardController extends Controller
                 ->get();
             $totalModalTerkumpul = (float) $investasiAktif->sum('jumlah_modal');
 
+            // Metrik Milestone Pendanaan & Komunitas Investor UMKM
+            $targetModalUmkm = (float) ($umkm->modal_dibutuhkan ?: ($umkm->target_pendanaan ?? 25000000));
+            $persentaseMilestone = $targetModalUmkm > 0 ? min(100, round(($totalModalTerkumpul / $targetModalUmkm) * 100, 1)) : ($totalModalTerkumpul > 0 ? 100 : 0);
+            $sisaModalDibutuhkan = max(0, $targetModalUmkm - $totalModalTerkumpul);
+            $jumlahInvestorAktif = $investasiAktif->pluck('id_pengguna')->unique()->count();
+            $totalModalPending = (float) Investasi::where('id_umkm', $umkm->id_umkm)->where('status', 'pending')->sum('jumlah_modal');
+            $jumlahInvestorPending = Investasi::where('id_umkm', $umkm->id_umkm)->where('status', 'pending')->distinct('id_pengguna')->count('id_pengguna');
+
             // Cek apakah ada kewajiban bagi hasil yang memasuki masa tenggang atau menunggak
             $adaDividenTenggangAtauNunggak = $investasiAktif->contains(function ($inv) {
                 $statusCode = $inv->status_dividen_bulan_ini['code'] ?? '';
@@ -215,7 +228,9 @@ class DashboardController extends Controller
                 ->first();
 
             // Marketplace Influencer & Kolaborasi Promosi untuk UMKM
-            $influencerList = InfluencerProfile::with('user')->where('status_verifikasi', 'terverifikasi')->get();
+            $influencerList = InfluencerProfile::with(['user', 'reviewedOrders.umkm', 'reviewedOrders.pemesan', 'reviewedOrders.investor'])
+                ->where('status_verifikasi', 'terverifikasi')
+                ->get();
             $influencerOrdersUmkm = InfluencerOrder::with(['influencer.user', 'investor', 'produk'])
                 ->where('umkm_id', $umkm->id_umkm)
                 ->latest()
@@ -240,6 +255,12 @@ class DashboardController extends Controller
                 'selectedInvestasi',
                 'investasiAktif',
                 'totalModalTerkumpul',
+                'targetModalUmkm',
+                'persentaseMilestone',
+                'sisaModalDibutuhkan',
+                'jumlahInvestorAktif',
+                'totalModalPending',
+                'jumlahInvestorPending',
                 'riwayatSetorDividen',
                 'totalDividenDisetor',
                 'sewaDisponsori',
@@ -463,7 +484,9 @@ class DashboardController extends Controller
             }
 
             // Marketplace Influencer & Program Sponsor Promosi untuk Investor
-            $influencerList = InfluencerProfile::with('user')->where('status_verifikasi', 'terverifikasi')->get();
+            $influencerList = InfluencerProfile::with(['user', 'reviewedOrders.umkm', 'reviewedOrders.pemesan', 'reviewedOrders.investor'])
+                ->where('status_verifikasi', 'terverifikasi')
+                ->get();
             $pengajuanSponsorMasuk = InfluencerOrder::with(['influencer.user', 'umkm', 'produk'])
                 ->where('investor_id', $user->id)
                 ->where('status', 'menunggu_persetujuan_investor')
@@ -988,8 +1011,8 @@ class DashboardController extends Controller
                 'rate_story' => 75000,
                 'rate_reels_tiktok' => 200000,
                 'rate_visit_store' => 350000,
-                'status_verifikasi' => 'terverifikasi',
-                'is_available' => true,
+                'status_verifikasi' => 'menunggu_verifikasi',
+                'is_available' => false,
                 'saldo' => 0,
             ]
         );
@@ -1048,11 +1071,15 @@ class DashboardController extends Controller
             'bank_name' => $validated['bank_name'] ?? null,
             'nomor_rekening' => $validated['nomor_rekening'] ?? null,
             'nama_rekening' => $validated['nama_rekening'] ?? null,
-            'status_verifikasi' => 'terverifikasi',
-            'is_available' => true,
+            'status_verifikasi' => 'menunggu_verifikasi',
+            'is_available' => false,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Selamat ' . $profile->nama_panggung . '! Formulir pendaftaran mitra influencer Anda telah selesai dan profil Anda langsung aktif di katalog UMKM.');
+        $user->update([
+            'status' => 'menunggu_verifikasi',
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Formulir pendaftaran mitra influencer berhasil disimpan! Akun Anda sedang dalam antrean verifikasi & persetujuan (ACC) dari Admin.');
     }
 
     /**
@@ -1477,7 +1504,7 @@ class DashboardController extends Controller
             'tanggal_selesai' => $tanggalSelesai,
             'total_harga' => $totalHarga,
             'status_pembayaran' => 'menunggu_konfirmasi',
-            'catatan_sponsor' => $validated['catatan_sewa'] ? ('Sewa Mandiri: ' . $validated['catatan_sewa']) : 'Sewa mandiri oleh mitra UMKM untuk ekspansi operasional usaha.',
+            'catatan_sponsor' => $validated['catatan_sewa'] ? ('Sewa Mandiri: '.$validated['catatan_sewa']) : 'Sewa mandiri oleh mitra UMKM untuk ekspansi operasional usaha.',
         ]);
 
         // Tambah unit terisi dan perbarui status ketersediaan

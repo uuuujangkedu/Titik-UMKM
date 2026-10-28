@@ -178,9 +178,17 @@
                                 <span class="text-[10px] text-gray-400 font-bold uppercase block">Followers</span>
                                 <span class="font-black text-[#1A202C]">{{ number_format($inf->followers_count, 0, ',', '.') }}</span>
                             </div>
-                            <div>
-                                <span class="text-[10px] text-gray-400 font-bold uppercase block">Rating</span>
-                                <span class="font-black text-amber-600">★ {{ number_format($inf->average_rating, 1) }}</span>
+                            <div class="cursor-pointer hover:bg-amber-100/70 p-1 -m-1 rounded-xl transition group"
+                                 onclick="openInfluencerReviewsModal('{{ $inf->id }}', '{{ addslashes($inf->nama_panggung) }}', '{{ number_format($inf->average_rating, 1) }}', '{{ $inf->total_reviews }}')"
+                                 title="Klik untuk melihat ulasan mitra">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase block">Rating</span>
+                                    <span class="text-[9px] text-[#0F433C] font-extrabold group-hover:underline">Lihat &rarr;</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="font-black text-amber-600">★ {{ number_format($inf->average_rating, 1) }}</span>
+                                    <span class="text-[10px] text-gray-500 font-medium">({{ $inf->total_reviews }} ulasan)</span>
+                                </div>
                             </div>
                         </div>
 
@@ -201,13 +209,84 @@
                         </div>
                     </div>
 
-                    <!-- Tombol Sponsori Modal -->
-                    <button type="button" 
-                            onclick="openInvestorSponsorModal('{{ $inf->id }}', '{{ $inf->nama_panggung }}', '{{ $inf->kota }}', '{{ $inf->rate_story }}', '{{ $inf->rate_reels_tiktok }}', '{{ $inf->rate_visit_store }}')"
-                            class="w-full py-3 bg-[#0F433C] hover:bg-[#1A5C52] text-white text-xs font-bold rounded-2xl transition shadow-sm flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span>Sponsori untuk UMKM Binaan</span>
-                    </button>
+                    <!-- Tombol Review & Sponsori Modal -->
+                    <div class="flex items-center gap-2">
+                        <button type="button" 
+                                onclick="openInfluencerReviewsModal('{{ $inf->id }}', '{{ addslashes($inf->nama_panggung) }}', '{{ number_format($inf->average_rating, 1) }}', '{{ $inf->total_reviews }}')"
+                                class="px-3.5 py-3 bg-[#EFF5F1] hover:bg-[#DCEEE5] text-[#0F433C] border border-[#b2d5cc] text-xs font-bold rounded-2xl transition flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                                title="Lihat review ulasan untuk {{ $inf->nama_panggung }}">
+                            <span class="text-amber-500 text-sm">★</span>
+                            <span>Review ({{ $inf->total_reviews }})</span>
+                        </button>
+                        <button type="button" 
+                                onclick="openInvestorSponsorModal('{{ $inf->id }}', '{{ $inf->nama_panggung }}', '{{ $inf->kota }}', '{{ $inf->rate_story }}', '{{ $inf->rate_reels_tiktok }}', '{{ $inf->rate_visit_store }}')"
+                                class="flex-1 py-3 bg-[#0F433C] hover:bg-[#1A5C52] text-white text-xs font-bold rounded-2xl transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
+                            <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Sponsori untuk UMKM Binaan</span>
+                        </button>
+                    </div>
+
+                    <!-- Template Review Kreator untuk Modal -->
+                    <template id="influencer-reviews-tmpl-{{ $inf->id }}">
+                        <div class="space-y-3">
+                            @forelse($inf->reviewedOrders as $rev)
+                                <div class="p-4 rounded-2xl bg-[#F8F6F0] border border-[#E8E6DF] space-y-2">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-8 h-8 rounded-full bg-[#0F433C] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                                {{ strtoupper(substr($rev->umkm->nama_usaha ?? ($rev->pemesan->name ?? 'M'), 0, 1)) }}
+                                            </div>
+                                            <div>
+                                                <div class="flex items-center gap-1.5 flex-wrap">
+                                                    <span class="text-xs font-bold text-gray-900">
+                                                        {{ $rev->umkm->nama_usaha ?? ($rev->pemesan->name ?? 'Mitra Usaha') }}
+                                                    </span>
+                                                    @if($rev->investor_id)
+                                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-100 text-blue-800 border border-blue-200">
+                                                            🤝 Disponsori Investor
+                                                        </span>
+                                                    @else
+                                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                            ✓ Mitra UMKM
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <span class="text-[10px] text-gray-400 font-medium">
+                                                    Order #{{ $rev->kode_order }} &bull; {{ $rev->updated_at ? $rev->updated_at->format('d M Y') : '-' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-amber-500 font-black text-xs bg-white px-2.5 py-1 rounded-xl border border-gray-100 shadow-xs shrink-0">
+                                            <span>★</span>
+                                            <span>{{ $rev->rating }}.0</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-2 text-[10px]">
+                                        <span class="px-2 py-0.5 rounded-lg bg-white text-gray-600 border border-gray-200 font-semibold">
+                                            Paket: <strong class="text-[#0F433C]">{{ $rev->paket_label }}</strong>
+                                        </span>
+                                        @if($rev->link_bukti_konten)
+                                            <a href="{{ $rev->link_bukti_konten }}" target="_blank" rel="noopener noreferrer" 
+                                               class="text-[#0F433C] hover:underline font-bold inline-flex items-center gap-0.5">
+                                                <span>Lihat Video Konten</span> &rarr;
+                                            </a>
+                                        @endif
+                                    </div>
+
+                                    <div class="p-3 rounded-xl bg-white border border-gray-100 text-xs text-gray-700 italic">
+                                        "{{ $rev->ulasan }}"
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="p-8 text-center text-xs text-gray-400">
+                                    <span class="text-3xl block mb-2">⭐</span>
+                                    <p class="font-bold text-gray-700 mb-1">Belum Ada Ulasan Masuk</p>
+                                    <p>Kreator ini belum memiliki ulasan dari pesanan sebelumnya. Jadilah mitra pertama yang bekerja sama!</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </template>
                 </div>
             @empty
                 <div class="col-span-3 bg-white rounded-3xl p-12 text-center text-gray-400 text-sm">
@@ -243,7 +322,12 @@
                                 </div>
                                 @php $badge = $order->status_badge; @endphp
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold 
-                                    {{ $order->status === 'selesai' ? 'bg-emerald-100 text-emerald-900' : 'bg-blue-100 text-blue-900' }}">
+                                    {{ $order->status === 'menunggu_respon_influencer' ? 'bg-blue-100 text-blue-900' : '' }}
+                                    {{ $order->status === 'menunggu_pembayaran_escrow' ? 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse' : '' }}
+                                    {{ $order->status === 'sedang_dikerjakan' ? 'bg-purple-100 text-purple-900' : '' }}
+                                    {{ $order->status === 'menunggu_verifikasi' ? 'bg-orange-100 text-orange-900 animate-pulse' : '' }}
+                                    {{ $order->status === 'selesai' ? 'bg-emerald-100 text-emerald-900' : '' }}
+                                    {{ str_contains($order->status, 'ditolak') ? 'bg-rose-100 text-rose-900' : '' }}">
                                     {{ $badge['label'] }}
                                 </span>
                             </div>
@@ -262,6 +346,50 @@
                                     <span class="font-black text-sm text-[#0F433C]">Rp {{ number_format($order->biaya, 0, ',', '.') }}</span>
                                 </div>
                             </div>
+
+                            <!-- Box Status Pembayaran Escrow -->
+                            @if($order->status_pembayaran !== 'lunas_escrow' && in_array($order->status, ['menunggu_pembayaran_escrow', 'menunggu_respon_influencer']))
+                                <div class="p-4 rounded-2xl my-2 space-y-3 border"
+                                     style="background-color: {{ $order->status === 'menunggu_pembayaran_escrow' ? '#FFFBEB' : '#F0FDF4' }} !important; border-color: {{ $order->status === 'menunggu_pembayaran_escrow' ? '#FCD34D' : '#86EFAC' }} !important;">
+                                    <div class="flex items-start gap-2.5">
+                                        <div class="w-7 h-7 rounded-lg text-white flex items-center justify-center text-xs shrink-0 shadow-xs font-bold"
+                                             style="background-color: {{ $order->status === 'menunggu_pembayaran_escrow' ? '#D97706' : '#0F433C' }} !important;">
+                                            {{ $order->status === 'menunggu_pembayaran_escrow' ? '⚡' : '💳' }}
+                                        </div>
+                                        <div class="text-[11px] leading-snug"
+                                             style="color: {{ $order->status === 'menunggu_pembayaran_escrow' ? '#78350F' : '#064E3B' }} !important;">
+                                            @if($order->status === 'menunggu_pembayaran_escrow')
+                                                <strong>Kreator Telah Menyetujui!</strong> Silakan setor dana sponsor sebesar <strong>Rp {{ number_format($order->biaya, 0, ',', '.') }}</strong> ke Rekber Titik-UMKM agar kreator dapat segera memproduksi konten promosi.
+                                            @else
+                                                <strong>Tawaran Sponsor Terkirim ke Kreator:</strong> Sedang ditinjau oleh {{ $order->influencer->nama_panggung ?? 'Kreator' }}. Anda dapat <strong>langsung menyetorkan dana sponsor ke Rekber Escrow sekarang</strong> agar produksi langsung berjalan saat kreator konfirmasi.
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="openModalBayarEscrowInvestor('{{ $order->id }}', '{{ $order->kode_order }}', '{{ $order->influencer->nama_panggung ?? 'Kreator' }}', '{{ (int)$order->biaya }}')"
+                                            class="w-full py-2.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 active:scale-[0.99]"
+                                            style="background: {{ $order->status === 'menunggu_pembayaran_escrow' ? 'linear-gradient(135deg, #D97706 0%, #B45309 100%)' : 'linear-gradient(135deg, #0F433C 0%, #165E54 100%)' }} !important; color: #FFFFFF !important; border: 1px solid {{ $order->status === 'menunggu_pembayaran_escrow' ? '#D97706' : '#0F433C' }} !important;">
+                                        <svg class="w-4 h-4 shrink-0" style="color: #FFFFFF !important;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                        <span style="color: #FFFFFF !important; font-weight: 800; font-size: 13px; text-shadow: 0 1px 2px rgba(0,0,0,0.25);">Setor Dana Sponsor &amp; Unggah Bukti (Escrow)</span>
+                                    </button>
+                                </div>
+                            @elseif($order->status_pembayaran === 'lunas_escrow')
+                                <div class="p-3 bg-emerald-50/90 border border-emerald-300 rounded-2xl my-2 text-xs flex items-center justify-between gap-2 shadow-xs">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 animate-pulse"></span>
+                                        <div class="truncate text-[11px]">
+                                            <span class="font-extrabold text-emerald-950 block">✓ Dana Sponsor Diamankan di Rekber Escrow</span>
+                                            <span class="text-emerald-800 text-[10px]">Via Bank {{ $order->bank_pengirim ?? '-' }} &bull; Rp {{ number_format($order->biaya, 0, ',', '.') }}</span>
+                                        </div>
+                                    </div>
+                                    @if($order->bukti_transfer_pemesan)
+                                        <a href="{{ $order->bukti_transfer_pemesan_url }}" target="_blank" rel="noopener noreferrer"
+                                           class="px-2.5 py-1.5 bg-white hover:bg-emerald-100 border border-emerald-300 text-[11px] font-bold text-emerald-800 rounded-xl shrink-0 flex items-center gap-1 transition shadow-2xs">
+                                            <span>Lihat Bukti</span>
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                        </a>
+                                    @endif
+                                </div>
+                            @endif
 
                             <!-- Link Video Hasil Konten -->
                             @if($order->link_bukti_konten)
@@ -483,6 +611,174 @@
         document.getElementById('inv_review_order_subtitle').innerText = "Order #" + kodeOrder + " • Kreator: " + influencerName;
         document.getElementById('modal-review-investor-order').classList.remove('hidden');
     }
+
+    function openModalBayarEscrowInvestor(orderId, kodeOrder, influencerName, biaya) {
+        const form = document.getElementById('form-bayar-escrow-investor');
+        form.action = "/dashboard/influencer/order/" + orderId + "/bayar-escrow";
+        document.getElementById('inv_escrow_modal_subtitle').innerText = "Order #" + kodeOrder + " • Kreator: " + influencerName;
+        document.getElementById('inv_escrow_modal_biaya').innerText = "Rp " + Number(biaya).toLocaleString('id-ID');
+        document.getElementById('modal-bayar-escrow-investor').classList.remove('hidden');
+    }
+
+    function closeModalBayarEscrowInvestor() {
+        document.getElementById('modal-bayar-escrow-investor').classList.add('hidden');
+    }
+
+    function openInfluencerReviewsModal(influencerId, namaPanggung, avgRating, totalReviews) {
+        document.getElementById('influencer-reviews-modal-title').innerText = 'Ulasan ' + namaPanggung;
+        document.getElementById('influencer-reviews-modal-score').innerText = '★ ' + avgRating + ' / 5.0';
+        document.getElementById('influencer-reviews-modal-count').innerText = totalReviews + ' Ulasan Mitra Terverifikasi';
+        
+        const tmpl = document.getElementById('influencer-reviews-tmpl-' + influencerId);
+        const container = document.getElementById('influencer-reviews-modal-body');
+        if (tmpl && container) {
+            container.innerHTML = tmpl.innerHTML;
+        } else if (container) {
+            container.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">Belum ada ulasan untuk kreator ini.</div>';
+        }
+        const modal = document.getElementById('modal-influencer-reviews-list');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeInfluencerReviewsModal() {
+        const modal = document.getElementById('modal-influencer-reviews-list');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+        }
+    }
 </script>
+
+<!-- MODAL BAYAR ESCROW INVESTOR -->
+<div id="modal-bayar-escrow-investor" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#E8E6DF] my-8 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-3 border-b border-[#E8E6DF] mb-4">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-[#1A202C]">Penyetoran Dana Sponsor (Escrow)</h3>
+                    <p id="inv_escrow_modal_subtitle" class="text-xs text-gray-500">Order #INF-XXXX &bull; Kreator: -</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModalBayarEscrowInvestor()" class="text-gray-400 hover:text-gray-600 text-lg">✕</button>
+        </div>
+
+        <form id="form-bayar-escrow-investor" action="" method="POST" enctype="multipart/form-data" class="space-y-4">
+            @csrf
+
+            <!-- Total Biaya Tagihan -->
+            <div class="p-3.5 bg-gradient-to-r from-[#EFF5F1] to-[#E3EFE8] rounded-2xl border border-emerald-200 flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold text-gray-600 block">Total Dana Sponsor yang Disetorkan</span>
+                    <span id="inv_escrow_modal_biaya" class="text-xl font-black text-[#0F433C]">Rp 0</span>
+                </div>
+                <span class="px-2.5 py-1 text-[10px] font-extrabold bg-emerald-800 text-white rounded-lg shadow-xs">Rekber Resmi</span>
+            </div>
+
+            <!-- Rekening Resmi Platform Titik UMKM -->
+            <div class="space-y-2">
+                <label class="block text-xs font-bold text-gray-700">Rekening Resmi Rekber Titik-UMKM:</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div class="p-2.5 bg-gray-50 border border-gray-200 rounded-xl space-y-0.5">
+                        <div class="flex items-center justify-between font-bold text-gray-900">
+                            <span>Bank BCA</span>
+                            <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">BCA</span>
+                        </div>
+                        <div class="font-mono font-bold text-emerald-800 select-all">8735-0921-22</div>
+                        <div class="text-[10px] text-gray-500">a.n PT Titik UMKM Indonesia</div>
+                    </div>
+
+                    <div class="p-2.5 bg-gray-50 border border-gray-200 rounded-xl space-y-0.5">
+                        <div class="flex items-center justify-between font-bold text-gray-900">
+                            <span>Bank Mandiri</span>
+                            <span class="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold">Mandiri</span>
+                        </div>
+                        <div class="font-mono font-bold text-emerald-800 select-all">142-00-1928374-1</div>
+                        <div class="text-[10px] text-gray-500">a.n PT Titik UMKM Indonesia</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulir Konfirmasi Transfer -->
+            <div class="pt-2 border-t border-gray-100 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Bank Pengirim Anda *</label>
+                        <select name="bank_pengirim" required class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-xl text-xs px-3 py-2.5 focus:border-[#0b5a4a] focus:bg-white font-semibold">
+                            <option value="">-- Pilih Bank --</option>
+                            <option value="BCA">BCA (Bank Central Asia)</option>
+                            <option value="Mandiri">Bank Mandiri</option>
+                            <option value="BRI">Bank BRI</option>
+                            <option value="BNI">Bank BNI</option>
+                            <option value="BSI">BSI (Bank Syariah Indonesia)</option>
+                            <option value="Bank Jatim">Bank Jatim</option>
+                            <option value="CIMB Niaga">CIMB Niaga</option>
+                            <option value="Lainnya">Bank Lainnya / E-Wallet</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Nama Pemilik Rekening *</label>
+                        <input type="text" name="nama_pengirim" required placeholder="Nama di rekening Anda"
+                               class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-xl text-xs px-3 py-2.5 focus:border-[#0b5a4a] focus:bg-white">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Unggah Foto Struk Bukti Transfer *</label>
+                    <input type="file" name="bukti_transfer" required accept="image/*"
+                           class="w-full bg-[#f7f6f1] border border-[#e2e1d8] rounded-xl text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#0F433C] file:text-white cursor-pointer">
+                    <span class="text-[10px] text-gray-400 mt-1 block">Format: JPG, PNG, atau WEBP. Maksimal 5MB.</span>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-3 border-t border-[#E8E6DF]">
+                <button type="button" onclick="closeModalBayarEscrowInvestor()" class="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2.5 text-xs font-bold bg-[#0F433C] hover:bg-[#19584F] text-white rounded-xl shadow-sm flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span>Kirim Bukti Setoran Sponsor</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL DAFTAR ULASAN / REVIEW INFLUENCER -->
+<div id="modal-influencer-reviews-list" onclick="if(event.target === this) closeInfluencerReviewsModal()" class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-gray-100 animate-scale-up max-h-[85vh] flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl shrink-0">
+                        ⭐
+                    </div>
+                    <div>
+                        <h3 class="text-base font-black text-[#1A202C]" id="influencer-reviews-modal-title">Ulasan Kreator</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            Rating Rata-rata: <strong id="influencer-reviews-modal-score" class="text-amber-600 font-black"></strong> &bull; <span id="influencer-reviews-modal-count" class="text-gray-500 font-medium"></span>
+                        </p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeInfluencerReviewsModal()" class="p-2 rounded-xl text-gray-400 hover:bg-gray-100 transition text-lg">✕</button>
+            </div>
+
+            <!-- Kontainer Scroll Ulasan -->
+            <div id="influencer-reviews-modal-body" class="overflow-y-auto max-h-[50vh] pr-1 space-y-3">
+                <!-- Diisi via JavaScript dari template terkait -->
+            </div>
+        </div>
+
+        <div class="mt-5 pt-3 border-t border-gray-100">
+            <button type="button" onclick="closeInfluencerReviewsModal()" class="w-full py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold transition">
+                Tutup Jendela Ulasan
+            </button>
+        </div>
+    </div>
+</div>
 
 @include('dashboard.partials.modal-daftar-influencer')

@@ -18,22 +18,29 @@ class KontrakInvestasiController extends Controller
         $user = Auth::user();
 
         // Cari berdasarkan id_kontrak atau id_investasi
-        $kontrak = KontrakInvestasi::with(['investasi', 'umkm.user', 'investor'])
+        $kontrak = KontrakInvestasi::with(['investasi.pengguna', 'umkm.user', 'investor'])
             ->where('id', $id)
             ->orWhere('id_investasi', $id)
             ->first();
 
         // Jika belum ada kontrak pada investasi ini, inisialisasi otomatis
-        if (!$kontrak) {
+        if (! $kontrak) {
             $investasi = Investasi::with(['umkm.user', 'pengguna'])->findOrFail($id);
             $kontrak = $this->createKontrakForInvestasi($investasi);
+        }
+
+        // Auto-heal jika relasi investor tidak ditemukan tetapi investasi memiliki pengguna/investor valid
+        if (! $kontrak->investor && $kontrak->investasi?->pengguna) {
+            $kontrak->id_investor = $kontrak->investasi->pengguna->id;
+            $kontrak->save();
+            $kontrak->load('investor');
         }
 
         // Hak akses: investor terkait, pemilik UMKM terkait, admin, atau mode tinjauan terbuka
         $isInvestor = ($kontrak->id_investor == $user->id) || ($user->role === 'investor' && app()->environment('local'));
         $isUmkm = (optional($kontrak->umkm)->user_id == $user->id) || ($user->role === 'umkm' && app()->environment('local'));
         $isAdmin = in_array($user->role, ['admin', 'super_admin']);
-        $isPreview = (!$isInvestor && !$isUmkm && !$isAdmin);
+        $isPreview = (! $isInvestor && ! $isUmkm && ! $isAdmin);
 
         return view('dashboard.kontrak.show', compact('kontrak', 'user', 'isInvestor', 'isUmkm', 'isAdmin', 'isPreview'));
     }
@@ -59,7 +66,7 @@ class KontrakInvestasiController extends Controller
         $isUmkm = (optional($kontrak->umkm)->user_id == $user->id) || ($user->role === 'umkm' && app()->environment('local'));
         $isAdmin = in_array($user->role, ['admin', 'super_admin']);
 
-        if (!$isInvestor && !$isUmkm && !$isAdmin) {
+        if (! $isInvestor && ! $isUmkm && ! $isAdmin) {
             return back()->with('error', 'Hanya pihak terkait dalam akad yang dapat membubuhkan tanda tangan digital.');
         }
 
@@ -73,8 +80,8 @@ class KontrakInvestasiController extends Controller
             $kontrak->signed_at_umkm = now();
         }
 
-        if ($isAdmin && !$isInvestor && !$isUmkm) {
-            if (!$kontrak->signature_investor) {
+        if ($isAdmin && ! $isInvestor && ! $isUmkm) {
+            if (! $kontrak->signature_investor) {
                 $kontrak->signature_investor = $signature;
                 $kontrak->signed_at_investor = now();
             } else {
@@ -89,7 +96,7 @@ class KontrakInvestasiController extends Controller
 
         $kontrak->save();
 
-        return back()->with('success', 'Tanda tangan elektronik Anda berhasil dibubuhkan secara sah pada Akad Perjanjian #' . $kontrak->nomor_kontrak . '!');
+        return back()->with('success', 'Tanda tangan elektronik Anda berhasil dibubuhkan secara sah pada Akad Perjanjian #'.$kontrak->nomor_kontrak.'!');
     }
 
     /**
@@ -97,8 +104,8 @@ class KontrakInvestasiController extends Controller
      */
     public function createKontrakForInvestasi(Investasi $investasi): KontrakInvestasi
     {
-        $nomorKontrak = 'TIKUM/AKAD/' . date('Y') . '/' . strtoupper(Str::random(3)) . '/' . sprintf('%04d', $investasi->id_investasi);
-        $qrCode = hash('sha256', $investasi->id_investasi . '_' . $investasi->id_pengguna . '_' . $investasi->id_umkm . '_' . uniqid());
+        $nomorKontrak = 'TIKUM/AKAD/'.date('Y').'/'.strtoupper(Str::random(3)).'/'.sprintf('%04d', $investasi->id_investasi);
+        $qrCode = hash('sha256', $investasi->id_investasi.'_'.$investasi->id_pengguna.'_'.$investasi->id_umkm.'_'.uniqid());
 
         return KontrakInvestasi::firstOrCreate(
             ['id_investasi' => $investasi->id_investasi],

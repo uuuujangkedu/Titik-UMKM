@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InfluencerProfile;
 use App\Models\Investasi;
 use App\Models\KlarifikasiDividen;
 use App\Models\LogAktivitasAdmin;
@@ -337,6 +338,13 @@ class SuperAdminController extends Controller
         $targetUser->status = $statusBaru;
         $targetUser->save();
 
+        if ($targetUser->role === 'influencer') {
+            InfluencerProfile::where('user_id', $targetUser->id)->update([
+                'status_verifikasi' => ($statusBaru === 'aktif') ? 'terverifikasi' : 'ditolak',
+                'is_available' => ($statusBaru === 'aktif'),
+            ]);
+        }
+
         LogAktivitasAdmin::create([
             'id_pengguna' => Auth::id(),
             'aksi' => 'Ubah Status Akun: '.$statusBaru,
@@ -441,6 +449,13 @@ class SuperAdminController extends Controller
         $statusLama = $targetUser->status;
         $targetUser->status = 'aktif';
         $targetUser->save();
+
+        if ($targetUser->role === 'influencer') {
+            InfluencerProfile::where('user_id', $targetUser->id)->update([
+                'status_verifikasi' => 'terverifikasi',
+                'is_available' => true,
+            ]);
+        }
 
         LogAktivitasAdmin::create([
             'id_pengguna' => Auth::id(),
@@ -853,12 +868,12 @@ class SuperAdminController extends Controller
               "Klarifikasi laporan kendala usaha Anda untuk periode {$klarifikasi->bulan_periode} telah DISETUJUI & DIVERIFIKASI oleh Tim Compliance Platform.\n\n".
               "STATUS DISPENSASI: Anda resmi diberikan toleransi untuk menyelesaikan kewajiban bagi hasil dividen pada periode BULAN DEPAN tanpa sanksi Surat Peringatan (SP).\n\n".
               "Catatan Verifikator Admin: {$validated['catatan_admin']}\n\n".
-              "Terima kasih atas transparansi dan itikad baik Anda dalam menjaga kemitraan sehat bersama mitra investor."
+              'Terima kasih atas transparansi dan itikad baik Anda dalam menjaga kemitraan sehat bersama mitra investor.'
             : "❌ [KLARIFIKASI DIVIDEN TIDAK DAPAT DISETUJUI]\n\n".
               "Kepada Yth. {$namaUsaha},\n\n".
               "Laporan klarifikasi penundaan dividen periode {$klarifikasi->bulan_periode} TIDAK DAPAT DISETUJUI oleh Tim Compliance Platform.\n\n".
               "Alasan / Catatan Admin: {$validated['catatan_admin']}\n\n".
-              "Mohon segera lakukan penyetoran dividen bagi hasil untuk menghindari penerbitan Surat Peringatan (SP).";
+              'Mohon segera lakukan penyetoran dividen bagi hasil untuk menghindari penerbitan Surat Peringatan (SP).';
 
         PesanInvestasi::create([
             'id_investasi' => $klarifikasi->id_investasi,
@@ -968,13 +983,13 @@ class SuperAdminController extends Controller
                            "Kepada Yth. Mitra {$umkm->nama_usaha},\n\n".
                            "Surat Peringatan ({$teguran->tingkat_sp}) yang diterbitkan pada {$teguran->created_at->translatedFormat('d F Y')} dinyatakan RESMI DICABUT / DISELESAIKAN.\n\n".
                            "Catatan Verifikasi: {$catatan}\n\n".
-                           "Status kepatuhan dividen bagi hasil kemitraan Anda telah dipulihkan menjadi lancar.",
+                           'Status kepatuhan dividen bagi hasil kemitraan Anda telah dipulihkan menjadi lancar.',
             ]);
         }
 
         LogAktivitasAdmin::create([
             'id_pengguna' => Auth::id(),
-            'aksi' => 'Mencabut / Menyelesaikan ' . $teguran->tingkat_sp . ' UMKM',
+            'aksi' => 'Mencabut / Menyelesaikan '.$teguran->tingkat_sp.' UMKM',
             'detail_perubahan' => [
                 'id_teguran' => $teguran->id_teguran,
                 'umkm' => $umkm->nama_usaha ?? '-',
@@ -1013,7 +1028,7 @@ class SuperAdminController extends Controller
 
         LogAktivitasAdmin::create([
             'id_pengguna' => Auth::id(),
-            'aksi' => 'Menghapus Record ' . $tingkatSp . ' dari Log Kepatuhan',
+            'aksi' => 'Menghapus Record '.$tingkatSp.' dari Log Kepatuhan',
             'detail_perubahan' => [
                 'id_teguran' => $id,
                 'umkm' => $umkm->nama_usaha ?? '-',

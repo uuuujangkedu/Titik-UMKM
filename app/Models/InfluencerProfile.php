@@ -58,9 +58,17 @@ class InfluencerProfile extends Model
         return $this->hasMany(InfluencerOrder::class, 'influencer_id');
     }
 
+    public function reviewedOrders(): HasMany
+    {
+        return $this->hasMany(InfluencerOrder::class, 'influencer_id')
+            ->whereNotNull('rating')
+            ->latest('updated_at');
+    }
+
     public function getAverageRatingAttribute(): float
     {
         $avg = $this->orders()->whereNotNull('rating')->avg('rating');
+
         return $avg ? round((float) $avg, 1) : 5.0;
     }
 

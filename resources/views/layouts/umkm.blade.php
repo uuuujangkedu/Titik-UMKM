@@ -196,9 +196,6 @@
                         </svg>
                         <span>SEWA INFLUENCER</span>
                     </div>
-                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-400 text-teal-950 shadow-sm">
-                        PROMO
-                    </span>
                 </a>
 
                 <!-- 6. PROFIL & FORMULIR PENGAJUAN -->

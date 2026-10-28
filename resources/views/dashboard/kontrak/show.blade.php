@@ -38,6 +38,18 @@
     </style>
 </head>
 <body class="py-6 sm:py-10 px-3 sm:px-6">
+@php
+    $investorName = $kontrak->investor?->name ?? $kontrak->investasi?->pengguna?->name ?? 'Mitra Investor';
+    $investorEmail = $kontrak->investor?->email ?? $kontrak->investasi?->pengguna?->email ?? '-';
+    $investorPhone = $kontrak->investor?->phone_number ?? $kontrak->investasi?->pengguna?->phone_number ?? '-';
+    $investorKota = $kontrak->investor?->provinsi_kota ?? $kontrak->investor?->kota ?? $kontrak->investasi?->pengguna?->kota ?? 'Indonesia';
+
+    $umkmNamaUsaha = $kontrak->umkm?->nama_usaha ?? $kontrak->investasi?->umkm?->nama_usaha ?? 'UMKM Mitra';
+    $umkmPemilik = $kontrak->umkm?->pemilik ?? $kontrak->investasi?->umkm?->pemilik ?? 'Pengelola UMKM';
+    $umkmNik = $kontrak->umkm?->nik_penanggung_jawab ?? $kontrak->investasi?->umkm?->nik_penanggung_jawab ?? 'Terdaftar Terverifikasi';
+    $umkmLokasi = $kontrak->umkm?->provinsi_kota ?? $kontrak->umkm?->kota ?? $kontrak->investasi?->umkm?->kota ?? '-';
+    $umkmJenisUsaha = $kontrak->umkm?->jenis_usaha ?? $kontrak->investasi?->umkm?->jenis_usaha ?? 'Sektor Riil';
+@endphp
 
     <!-- FLOATING ACTION BAR (NO PRINT) -->
     <div class="no-print max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
@@ -72,7 +84,7 @@
             <span class="text-xl">📌</span>
             <div>
                 <strong class="font-bold block text-sm">Mode Salinan Transparansi Publik:</strong>
-                <span>Anda sedang meninjau dokumen legal Akad Kemitraan resmi platform TIKUM. Tanda tangan aktif dikhususkan bagi pihak Investor ({{ $kontrak->investor->name }}) dan Pengelola UMKM ({{ $kontrak->umkm->pemilik }}).</span>
+                <span>Anda sedang meninjau dokumen legal Akad Kemitraan resmi platform TIKUM. Tanda tangan aktif dikhususkan bagi pihak Investor ({{ $investorName }}) dan Pengelola UMKM ({{ $umkmPemilik }}).</span>
             </div>
         </div>
     @endif
@@ -111,15 +123,15 @@
             <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-1">
                 <div class="flex items-start gap-2">
                     <span class="font-bold w-24 shrink-0">1. Nama Lengkap</span>
-                    <span class="font-bold text-gray-900">: {{ $kontrak->investor->name }}</span>
+                    <span class="font-bold text-gray-900">: {{ $investorName }}</span>
                 </div>
                 <div class="flex items-start gap-2">
                     <span class="font-bold w-24 shrink-0">   Email / No. HP</span>
-                    <span>: {{ $kontrak->investor->email }} / {{ $kontrak->investor->phone_number ?? '-' }}</span>
+                    <span>: {{ $investorEmail }} / {{ $investorPhone }}</span>
                 </div>
                 <div class="flex items-start gap-2">
                     <span class="font-bold w-24 shrink-0">   Domisili</span>
-                    <span>: {{ $kontrak->investor->provinsi_kota ?? $kontrak->investor->kota ?? 'Indonesia' }}</span>
+                    <span>: {{ $investorKota }}</span>
                 </div>
                 <p class="text-[11px] text-gray-500 pt-1 italic">
                     Bertindak selaku Pemodal dalam kemitraan ini, untuk selanjutnya disebut sebagai <strong>"PIHAK PERTAMA" (Mitra Investor)</strong>.
@@ -130,15 +142,15 @@
             <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-1">
                 <div class="flex items-start gap-2">
                     <span class="font-bold w-24 shrink-0">2. Nama Usaha</span>
-                    <span class="font-bold text-gray-900">: {{ $kontrak->umkm->nama_usaha }}</span>
+                    <span class="font-bold text-gray-900">: {{ $umkmNamaUsaha }}</span>
                 </div>
                 <div class="flex items-start gap-2">
                     <span class="font-bold w-24 shrink-0">   Pengelola / NIK</span>
-                    <span>: {{ $kontrak->umkm->pemilik }} (NIK: {{ $kontrak->umkm->nik_penanggung_jawab ?? 'Terdaftar Terverifikasi' }})</span>
+                    <span>: {{ $umkmPemilik }} (NIK: {{ $umkmNik }})</span>
                 </div>
                 <div class="flex items-start gap-2">
                     <span class="font-bold w-24 shrink-0">   Lokasi Usaha</span>
-                    <span>: {{ $kontrak->umkm->provinsi_kota ?? $kontrak->umkm->kota ?? '-' }}</span>
+                    <span>: {{ $umkmLokasi }}</span>
                 </div>
                 <p class="text-[11px] text-gray-500 pt-1 italic">
                     Bertindak selaku Pengelola Usaha yang mengoperasikan modal, untuk selanjutnya disebut sebagai <strong>"PIHAK KEDUA" (Pelaku UMKM)</strong>.
@@ -159,7 +171,7 @@
                     PASAL 1<br><span class="text-xs font-bold text-gray-600">KETENTUAN UMUM & OBJEK KEMITRAAN</span>
                 </h3>
                 <ol class="list-decimal list-outside pl-5 space-y-1.5 text-justify">
-                    <li>PIHAK PERTAMA sepakat menempatkan sejumlah modal investasi pada usaha komersial yang dikelola oleh PIHAK KEDUA, yaitu <strong>"{{ $kontrak->umkm->nama_usaha }}"</strong> yang bergerak pada sektor <strong>{{ $kontrak->umkm->jenis_usaha }}</strong>.</li>
+                    <li>PIHAK PERTAMA sepakat menempatkan sejumlah modal investasi pada usaha komersial yang dikelola oleh PIHAK KEDUA, yaitu <strong>"{{ $umkmNamaUsaha }}"</strong> yang bergerak pada sektor <strong>{{ $umkmJenisUsaha }}</strong>.</li>
                     <li>Akad kemitraan ini berlandaskan asas musyarakah/kepercayaan, keterbukaan informasi, dan keadilan bagi hasil sektor riil non-riba.</li>
                     <li>Modal yang diserahkan dipergunakan secara sah semata-mata untuk modal kerja produktif, pengadaan persediaan bahan baku, biaya operasional, dan pengembangan usaha PIHAK KEDUA.</li>
                 </ol>
@@ -232,7 +244,7 @@
             <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 flex flex-col justify-between min-h-[260px]">
                 <div>
                     <span class="text-[10px] font-bold uppercase text-gray-400 block mb-1">PIHAK PERTAMA (INVESTOR)</span>
-                    <span class="font-black text-gray-900 block">{{ $kontrak->investor->name }}</span>
+                    <span class="font-black text-gray-900 block">{{ $investorName }}</span>
                 </div>
 
                 <div class="my-4 flex flex-col items-center justify-center">
@@ -256,7 +268,7 @@
                 </div>
 
                 <div class="border-t border-gray-200 pt-2">
-                    <span class="font-bold text-gray-800 text-xs block underline">{{ $kontrak->investor->name }}</span>
+                    <span class="font-bold text-gray-800 text-xs block underline">{{ $investorName }}</span>
                     <span class="text-[10px] text-gray-500">Mitra Investor TIKUM</span>
                 </div>
             </div>
@@ -265,7 +277,7 @@
             <div class="p-5 rounded-2xl bg-gray-50 border border-gray-200 flex flex-col justify-between min-h-[260px]">
                 <div>
                     <span class="text-[10px] font-bold uppercase text-gray-400 block mb-1">PIHAK KEDUA (PENGELOLA UMKM)</span>
-                    <span class="font-black text-gray-900 block">{{ $kontrak->umkm->nama_usaha }}</span>
+                    <span class="font-black text-gray-900 block">{{ $umkmNamaUsaha }}</span>
                 </div>
 
                 <div class="my-4 flex flex-col items-center justify-center">
@@ -289,7 +301,7 @@
                 </div>
 
                 <div class="border-t border-gray-200 pt-2">
-                    <span class="font-bold text-gray-800 text-xs block underline">{{ $kontrak->umkm->pemilik }}</span>
+                    <span class="font-bold text-gray-800 text-xs block underline">{{ $umkmPemilik }}</span>
                     <span class="text-[10px] text-gray-500">Penanggung Jawab Usaha</span>
                 </div>
             </div>
