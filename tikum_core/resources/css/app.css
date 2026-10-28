@@ -1,0 +1,717 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'IBM Plex Sans', "Segoe UI", system-ui, sans-serif;
+
+    /* Base canvas & text */
+    --color-bg: #FAFBF9;
+    --color-surface: #ffffff;
+    --color-ink: #15241C;
+    --color-ink-2: #3E5445;
+    --color-line: #C8BFB0;
+
+    /* User Palette Settings */
+    /* Biru langit (#A8D8F0 → #79BEE8) — hero background, section CTA */
+    --color-sky-light: #A8D8F0;
+    --color-sky: #79BEE8;
+
+    /* Hijau rumput cerah (#6FC142) — section features, wave divider di hero */
+    --color-grass-bright: #6FC142;
+
+    /* Hijau rumput gelap (#4A9A2E, #2D6B22) — tombol utama, badge, aksen */
+    --color-grass-mid: #4A9A2E;
+    --color-grass-dark: #2D6B22;
+
+    /* Krem tembok rumah (#F7E8C8, #EDD9A3) — section listings, card */
+    --color-cream-light: #F7E8C8;
+    --color-cream: #EDD9A3;
+
+    /* Hijau genteng/pohon gelap (#1E4A1A) — footer */
+    --color-roof-dark: #1E4A1A;
+
+    /* Abu trotoar (#C8BFB0) — border dan detail kecil */
+    --color-pavement: #C8BFB0;
+
+    /* Semantic Aliases */
+    --color-green: #2D6B22;
+    --color-green-dark: #1E4A1A;
+    --color-green-mid: #4A9A2E;
+    --color-green-light: #F7E8C8;
+    --color-green-hover: #1E4A1A;
+    --color-mint: #F2F8ED;
+    --color-gold: #EDD9A3;
+    --color-gold-hover: #E2CA8F;
+    --color-yellow-accent: #6FC142;
+
+    /* Legacy tokens for compatibility */
+    --color-primary: #2D6B22;
+    --color-primary-dark: #1E4A1A;
+    --color-primary-light: #F7E8C8;
+    --color-secondary: #4A9A2E;
+    --color-neutral-bg: #FAFBF9;
+    --color-neutral-card: #ffffff;
+    --color-neutral-border: #C8BFB0;
+    --color-neutral-text: #15241C;
+    --color-neutral-muted: #3E5445;
+    --color-accent: #6FC142;
+    --color-accent-hover: #4A9A2E;
+}
+
+:root {
+    --bg: #FAFBF9;
+    --surface: #ffffff;
+    --ink: #15241C;
+    --ink-2: #3E5445;
+    --line: #C8BFB0;
+
+    --sky-light: #A8D8F0;
+    --sky: #79BEE8;
+    --grass-bright: #6FC142;
+    --grass-mid: #4A9A2E;
+    --grass-dark: #2D6B22;
+    --cream-light: #F7E8C8;
+    --cream: #EDD9A3;
+    --roof-dark: #1E4A1A;
+    --pavement: #C8BFB0;
+
+    --green: #2D6B22;
+    --green-dark: #1E4A1A;
+    --green-mid: #4A9A2E;
+    --green-light: #F7E8C8;
+    --green-hover: #1E4A1A;
+    --mint: #F2F8ED;
+    --gold: #EDD9A3;
+    --gold-hover: #E2CA8F;
+    --yellow-accent: #6FC142;
+    --teal-glow: rgba(111, 193, 66, 0.16);
+    --yellow-soft: rgba(247, 232, 200, 0.45);
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', "Segoe UI", system-ui, sans-serif;
+}
+
+/* Accessibility focus ring */
+:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+}
+
+/* Buttons */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--green);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 14px 22px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--green-hover);
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 14px 22px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid var(--green);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--mint);
+}
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+}
+
+.btn-ghost:hover {
+    color: var(--green);
+}
+
+.btn-header-masuk {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--gold);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+    padding: 7px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-header-masuk:hover {
+    background-color: var(--gold-hover);
+}
+
+/* Opportunity Panel */
+.panel-peluang {
+    background-color: var(--mint);
+    border-radius: 10px;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px 24px;
+}
+
+/* Card */
+.design-card {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.hero-card {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 32px 24px;
+}
+
+/* ========================================================
+   PENGATURAN KARAKTER HERO (UKURAN & POSISI JARAK)
+   ======================================================== */
+.hero-character-wrapper {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    align-self: flex-end;
+    /* Menempelkan tepi bawah potongan badan ke dasar kartu (menghapus jarak ngambang) */
+    margin-bottom: -32px;
+}
+
+@media (min-width: 640px) {
+    .hero-character-wrapper {
+        margin-bottom: -48px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-character-wrapper {
+        justify-content: flex-end;
+        margin-bottom: -72px; /* UBAH DI SINI: untuk atur posisi naik/turun karakter di desktop */
+    }
+}
+
+.hero-character-img {
+    width: 100%;
+    max-width: 400px; /* Ukuran mobile/tablet */
+    height: auto;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.05));
+    transition: transform 0.2s ease;
+}
+
+@media (min-width: 1024px) {
+    .hero-character-img {
+        max-width: 530px; /* UBAH DI SINI: untuk atur besar/kecil karakter di desktop */
+        transform: scale(1.06); /* Skala proporsi karakter */
+        transform-origin: bottom right;
+    }
+}
+
+/* ========================================================
+   PENGATURAN KARAKTER TENTANG KAMI
+   ======================================================== */
+.about-character-wrapper {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    align-self: flex-end;
+    margin-bottom: -32px;
+}
+
+@media (min-width: 640px) {
+    .about-character-wrapper {
+        margin-bottom: -48px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .about-character-wrapper {
+        justify-content: center;
+        margin-bottom: -72px; /* Menempelkan batas bawah karakter ke dasar kartu */
+    }
+}
+
+.about-character-img {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.05));
+    transition: transform 0.2s ease;
+}
+
+@media (min-width: 1024px) {
+    .about-character-img {
+        max-width: 480px;
+        transform: scale(1.08);
+        transform-origin: bottom center;
+    }
+}
+
+
+
+@media (min-width: 640px) {
+    .hero-card {
+        padding: 48px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-card {
+        padding: 72px 64px;
+    }
+}
+
+/* Motion: GSAP handles all hero and scroll animations via motion.js.
+   No CSS @keyframes needed. Elements are visible by default (no opacity:0 in markup)
+   so content is readable with JS disabled or prefers-reduced-motion. */
+
+/* Smooth scroll behavior & section anchor offset */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+
+section[id] {
+    scroll-margin-top: 100px;
+}
+
+/* Public Header Styles (Sesuai new-design.jpg) */
+.header-public {
+    color: #1A1A1A;
+    transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                backdrop-filter 0.3s ease;
+}
+
+/* Transparan saat berada di area animasi sequence beranda */
+.header-public.header-transparent {
+    background-color: transparent !important;
+    border-bottom: 1px solid transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Putih frosted saat scroll masuk ke konten web utama (hero, tentang kami, dll) */
+.header-public.header-scrolled,
+.header-public:not(.header-transparent) {
+    background-color: rgba(255, 255, 255, 0.94) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border-bottom: 1px solid rgba(26, 91, 54, 0.10) !important;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04) !important;
+}
+
+.header-public .brand-text {
+    color: var(--green-dark);
+}
+
+/* Nav Item - Uniform, Crisp, Straight Underline on Hover & Active */
+.header-public .nav-item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+    border-radius: 0 !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    transition: color 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.header-public .nav-item:hover {
+    color: var(--green-dark);
+    border-bottom-color: rgba(26, 91, 54, 0.3);
+}
+
+.header-public .nav-item.active {
+    color: var(--green-dark);
+    border-bottom-color: var(--green-dark);
+    font-weight: 600;
+}
+
+/* ========================================================
+   ANIMASI FLOATING MICRO-ASSETS (new-design.jpg)
+   ======================================================== */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(1.5deg);
+    }
+}
+
+@keyframes float-slow {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-7px) rotate(-1deg);
+    }
+}
+
+@keyframes float-delayed {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-12px) rotate(1deg);
+    }
+}
+
+.animate-float {
+    animation: float 4.5s ease-in-out infinite;
+}
+
+.animate-float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float-delayed 5.2s ease-in-out 1.2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-float,
+    .animate-float-slow,
+    .animate-float-delayed {
+        animation: none !important;
+    }
+}
+
+/* Language Switcher Button (Segmented Button Control) */
+.lang-switch-container {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.header-public.scrolled .lang-switch-container {
+    background-color: var(--bg);
+    border-color: var(--line);
+}
+
+/* Language Switcher Component (Capsule Pill Design with Crystal Clear Active State) */
+.lang-switch-container {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1.5px solid rgba(45, 107, 34, 0.25);
+    border-radius: 9999px;
+    padding: 3px;
+    gap: 2px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.lang-btn {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+    cursor: pointer;
+    color: #3E5445;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+}
+
+.lang-btn:hover:not(.active) {
+    color: #15241C;
+    background-color: rgba(45, 107, 34, 0.08);
+}
+
+.lang-btn.active {
+    background-color: #2D6B22 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 8px rgba(45, 107, 34, 0.35) !important;
+}
+
+.header-public.header-scrolled .lang-switch-container {
+    background: rgba(245, 248, 244, 0.95);
+    border-color: rgba(45, 107, 34, 0.28);
+}
+
+.header-public.header-scrolled .lang-btn {
+    color: #3E5445;
+}
+
+.header-public.header-scrolled .lang-btn:hover:not(.active) {
+    color: #15241C;
+    background-color: rgba(45, 107, 34, 0.08);
+}
+
+.header-public.header-scrolled .lang-btn.active {
+    background-color: #2D6B22 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(45, 107, 34, 0.35) !important;
+}
+
+
+
+/* ========================================================
+   MODUL AKSESIBILITAS & DISABILITAS (WCAG Standards)
+   ======================================================== */
+
+/* 1. Pengaturan Ukuran Teks (Font Scaling: Normal > Besar > Lebih besar) */
+html.a11y-font-sm {
+    font-size: 14.5px !important;
+}
+html.a11y-font-normal {
+    font-size: 16px !important;
+}
+html.a11y-font-lg {
+    font-size: 18.5px !important;
+}
+html.a11y-font-xl {
+    font-size: 21px !important;
+}
+
+/* 2. Mode Kontras Tinggi (High Contrast WCAG AAA) */
+html.a11y-high-contrast {
+    --bg: #000000 !important;
+    --surface: #121212 !important;
+    --ink: #ffff00 !important;
+    --ink-2: #ffffff !important;
+    --line: #ffff00 !important;
+    --green: #ffff00 !important;
+    --green-hover: #ffffff !important;
+    --mint: #1a1a1a !important;
+    --gold: #ffff00 !important;
+    --gold-hover: #ffffff !important;
+}
+
+html.a11y-high-contrast body {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+html.a11y-high-contrast div:not(#a11y-widget-root *),
+html.a11y-high-contrast section:not(#a11y-widget-root *),
+html.a11y-high-contrast aside:not(#a11y-widget-root *),
+html.a11y-high-contrast main:not(#a11y-widget-root *),
+html.a11y-high-contrast header:not(#a11y-widget-root *),
+html.a11y-high-contrast footer:not(#a11y-widget-root *),
+html.a11y-high-contrast .hero-card,
+html.a11y-high-contrast .bg-white,
+html.a11y-high-contrast [class*="bg-white"],
+html.a11y-high-contrast [class*="bg-[#f7f6f1]"],
+html.a11y-high-contrast [class*="bg-[#F8F7F2]"],
+html.a11y-high-contrast [class*="bg-[#F9F8F3]"] {
+    background-color: #0d0d0d !important;
+    border-color: #ffff00 !important;
+    color: #ffffff !important;
+}
+
+html.a11y-high-contrast h1,
+html.a11y-high-contrast h2,
+html.a11y-high-contrast h3,
+html.a11y-high-contrast h4,
+html.a11y-high-contrast strong,
+html.a11y-high-contrast b,
+html.a11y-high-contrast a:not(#a11y-widget-root *),
+html.a11y-high-contrast .brand-text {
+    color: #ffff00 !important;
+}
+
+html.a11y-high-contrast a:not(#a11y-widget-root *) {
+    text-decoration: underline !important;
+}
+
+html.a11y-high-contrast input:not(#a11y-widget-root *),
+html.a11y-high-contrast select:not(#a11y-widget-root *),
+html.a11y-high-contrast textarea:not(#a11y-widget-root *) {
+    background-color: #000000 !important;
+    color: #ffff00 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+html.a11y-high-contrast .btn-primary,
+html.a11y-high-contrast .btn-secondary,
+html.a11y-high-contrast .btn-header-masuk {
+    background-color: #000000 !important;
+    color: #ffff00 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+html.a11y-high-contrast .btn-primary:hover,
+html.a11y-high-contrast .btn-secondary:hover,
+html.a11y-high-contrast .btn-header-masuk:hover {
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+}
+
+/* 3. Mode Ramah Disleksia (Dyslexia Friendly) */
+html.a11y-dyslexia,
+html.a11y-dyslexia body,
+html.a11y-dyslexia p,
+html.a11y-dyslexia h1,
+html.a11y-dyslexia h2,
+html.a11y-dyslexia h3,
+html.a11y-dyslexia h4,
+html.a11y-dyslexia a,
+html.a11y-dyslexia span,
+html.a11y-dyslexia button,
+html.a11y-dyslexia input,
+html.a11y-dyslexia textarea,
+html.a11y-dyslexia select {
+    font-family: 'Lexend', 'Comic Sans MS', sans-serif !important;
+    letter-spacing: 0.05em !important;
+    word-spacing: 0.12em !important;
+    line-height: 1.8 !important;
+}
+
+/* 4. Mode Sorot Tautan (Highlight Links) */
+html.a11y-highlight-links a:not(#a11y-widget-root *),
+html.a11y-highlight-links button[type="button"]:not(#a11y-widget-root *),
+html.a11y-highlight-links button[type="submit"]:not(#a11y-widget-root *) {
+    outline: 2px solid #ca8a04 !important;
+    outline-offset: 2px !important;
+    background-color: rgba(254, 240, 138, 0.4) !important;
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px !important;
+    text-underline-offset: 3px !important;
+    color: #854d0e !important;
+}
+
+/* 5. Sorotan Aktif Saat Elemen Sedang Dibacakan (Screen Reader) */
+.a11y-speaking-active {
+    outline: 3px solid #0b5a4a !important;
+    outline-offset: 4px !important;
+    background-color: rgba(216, 235, 229, 0.5) !important;
+    border-radius: 4px !important;
+    transition: outline 0.15s ease, background-color 0.15s ease;
+}
+
+/* 6. Switch & Widget Panel Precision Styling */
+.a11y-switch {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+    padding: 2px !important;
+    border: none !important;
+    border-radius: 9999px !important;
+    background-color: #cbd5e1 !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+    flex-shrink: 0 !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    vertical-align: middle !important;
+}
+
+.a11y-switch.active {
+    background-color: #0b5a4a !important;
+}
+
+.a11y-switch-thumb {
+    display: block !important;
+    width: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+    height: 20px !important;
+    min-height: 20px !important;
+    max-height: 20px !important;
+    border-radius: 9999px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    pointer-events: none !important;
+    transform: translateX(0px) !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+}
+
+.a11y-switch.active .a11y-switch-thumb {
+    transform: translateX(20px) !important;
+}
+
+#a11y-panel::-webkit-scrollbar {
+    width: 5px;
+}
+#a11y-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+#a11y-panel::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+}
+#a11y-panel::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+}
+
+
+
